@@ -57,8 +57,6 @@ public class MainLayout extends Application {
 	protected PdfPane pdfPane;
 	protected ImageView signatureImageView;
 	protected ListView<Signature> signatureList;
-	private ContextMenu signatureListContextMenu1;
-	private ContextMenu signatureListContextMenu2;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -141,52 +139,21 @@ public class MainLayout extends Application {
 		signatureImageView.setVisible(false);
 		pdfPane.getChildren().add(signatureImageView);
 		
-		{
-			MenuItem menuItemAdd = new MenuItem("追加", new ImageView(Resources.IMAGE_ADD_16PX));
-			menuItemAdd.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					try {
-						signatureList_add();
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			MenuItem menuItemEdit = new MenuItem("編集", new ImageView(Resources.IMAGE_EDIT_16PX));
-			menuItemEdit.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					try {
-						signatureList_edit();
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			MenuItem menuItemDelete = new MenuItem("削除", new ImageView(Resources.IMAGE_DELETE_16PX));
-			menuItemDelete.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					try {
-						signatureList_delete();
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			signatureListContextMenu1 = new ContextMenu(
-				menuItemAdd
-			);
-			signatureListContextMenu2 = new ContextMenu(
-				menuItemEdit,
-				menuItemDelete
-			);
-		}
-		
 		signatureList = new ListView<Signature>();
 		signatureList.getStyleClass().add("signature-list");
 		signatureList.setFocusTraversable(false);
+		
+		// 印影のリストは、(1) PDFを表示していないとき左クリック無効 (2) 右クリックでの選択無効
+		signatureList.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.isPrimaryButtonDown() && pdfPane.getDocument() == null) {
+					event.consume();
+				} else if(event.isSecondaryButtonDown()) {
+					event.consume();
+				}
+			}
+		});
 		signatureList.setCellFactory(new Callback<ListView<Signature>, ListCell<Signature>>() {
 			@Override
 			public ListCell<Signature> call(ListView<Signature> param) {
@@ -194,9 +161,36 @@ public class MainLayout extends Application {
 					@Override
 					public void updateItem(ListCell<Signature> cell, Signature item, boolean empty) {
 						if(empty || !item.isVisible()) {
-							cell.setContextMenu(signatureListContextMenu1);
+							MenuItem menuItemAdd = new MenuItem("追加", new ImageView(Resources.IMAGE_ADD_16PX));
+							menuItemAdd.setOnAction(event -> {
+								try {
+									signatureList_add();
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+							});
+							ContextMenu contextMenu = new ContextMenu(menuItemAdd);
+							cell.setContextMenu(contextMenu);
 						} else {
-							cell.setContextMenu(signatureListContextMenu2);
+							MenuItem menuItemEdit = new MenuItem("編集", new ImageView(Resources.IMAGE_EDIT_16PX));
+							menuItemEdit.setOnAction(event -> {
+								try {
+									signatureList_edit(item);
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+							});
+							MenuItem menuItemDelete = new MenuItem("削除", new ImageView(Resources.IMAGE_DELETE_16PX));
+							menuItemDelete.setOnAction(event -> {
+								try {
+									signatureList_delete(item);
+								} catch(Exception e) {
+									e.printStackTrace();
+								}
+								
+							});
+							ContextMenu contextMenu = new ContextMenu(menuItemEdit, menuItemDelete);
+							cell.setContextMenu(contextMenu);
 						}
 					}
 				});
@@ -528,9 +522,9 @@ public class MainLayout extends Application {
 	protected void signatureList_add() throws Exception {
 	}
 	
-	protected void signatureList_edit() throws Exception {
+	protected void signatureList_edit(Signature signature) throws Exception {
 	}
 	
-	protected void signatureList_delete() throws Exception {
+	protected void signatureList_delete(Signature signature) throws Exception {
 	}
 }

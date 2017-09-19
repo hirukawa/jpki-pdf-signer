@@ -13,6 +13,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonType;
@@ -33,6 +34,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
 import net.osdn.jpki.Resources;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class SignatureDialog extends Dialog<Signature> {
 	
@@ -48,7 +50,7 @@ public class SignatureDialog extends Dialog<Signature> {
 	private byte[] image;
 	
 	
-	public SignatureDialog(Signature signature) {
+	public SignatureDialog(final Window owner, Signature signature) {
 		
 		Stage stage = (Stage)getDialogPane().getScene().getWindow();
 		stage.getIcons().add(Resources.IMAGE_APPLICATION_16PX);
@@ -204,6 +206,21 @@ public class SignatureDialog extends Dialog<Signature> {
 		btnBrowse.requestFocus();
 		updateImage();
 		updateButtons();
+		
+		if(owner != null) {
+			getDialogPane().layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
+				@Override
+				public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+					if(getWidth() > 0 && getHeight() > 0) {
+						double x = owner.getX() + owner.getWidth() / 2;
+						double y = owner.getY() + owner.getHeight() / 2;
+						setX(x - getWidth() / 2);
+						setY(y - getHeight() / 2);
+						getDialogPane().layoutBoundsProperty().removeListener(this);
+					}
+				}
+			});
+		}
 	}
 	
 	public void setWidthMillis(double widthMillis) {

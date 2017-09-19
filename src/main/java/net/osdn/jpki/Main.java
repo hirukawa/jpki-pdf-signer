@@ -41,6 +41,7 @@ import net.osdn.util.fx.Dialogs;
 public class Main extends MainLayout {
 	public static String APP_TITLE = "JPKI PDF SIGNER";
 	public static String APP_VERSION;
+	public static String APP_WINDOW_TITLE;
 
 	private static volatile int count = 0;
 	private static Stage stage;
@@ -54,6 +55,9 @@ public class Main extends MainLayout {
 				} else {
 					APP_VERSION = String.format("%d.%d.%d", version[0], version[1], version[2]);
 				}
+				APP_WINDOW_TITLE = APP_TITLE + " " + APP_VERSION;
+			} else {
+				APP_WINDOW_TITLE = APP_TITLE;
 			}
 			launch(args);
 		} else {
@@ -166,7 +170,7 @@ public class Main extends MainLayout {
 			menuFileSave.setDisable(false);
 			dirty = file;
 		} else {
-			stage.setTitle(file.getAbsolutePath() + " - " + Main.APP_TITLE + ((Main.APP_VERSION != null) ? (" " + Main.APP_VERSION) : ""));
+			stage.setTitle(file.getAbsolutePath() + " - " + APP_WINDOW_TITLE);
 			menuFileSave.setDisable(true);
 			input = file;
 			dirty = null;
@@ -356,8 +360,11 @@ public class Main extends MainLayout {
 		
 		if(signature != null && !signature.isVisible()) {
 			signatureList.refresh();
-			ButtonType result = Dialogs.showConfirmation(stage, "印影を使わずに電子署名をしますか？");
+			ButtonType result = Dialogs.showConfirmation(stage, APP_WINDOW_TITLE, "印影を使わずに電子署名をしますか？");
 			if(result != ButtonType.OK) {
+				Platform.runLater(() -> {
+					signatureList.getSelectionModel().clearSelection();
+				});
 				return;
 			}
 			Platform.runLater(() -> {
@@ -374,7 +381,7 @@ public class Main extends MainLayout {
 	
 	@Override
 	protected void signatureList_add() throws NoSuchAlgorithmException, IOException {
-		SignatureDialog dialog = new SignatureDialog(null);
+		SignatureDialog dialog = new SignatureDialog(stage, null);
 		Optional<Signature> opt = dialog.showAndWait();
 		if(opt.isPresent()) {
 			Signature signature = opt.get();
@@ -384,12 +391,11 @@ public class Main extends MainLayout {
 	}
 	
 	@Override
-	protected void signatureList_edit() throws IOException, NoSuchAlgorithmException {
-		Signature signature = signatureList.getSelectionModel().getSelectedItem();
+	protected void signatureList_edit(Signature signature) throws IOException, NoSuchAlgorithmException {
 		if(signature == null) {
 			return;
 		}
-		SignatureDialog dialog = new SignatureDialog(signature);
+		SignatureDialog dialog = new SignatureDialog(stage, signature);
 		Optional<Signature> opt = dialog.showAndWait();
 		if(opt.isPresent()) {
 			Signature s = opt.get();
@@ -403,8 +409,7 @@ public class Main extends MainLayout {
 	}
 	
 	@Override
-	protected void signatureList_delete() throws NoSuchAlgorithmException, IOException {
-		Signature signature = signatureList.getSelectionModel().getSelectedItem();
+	protected void signatureList_delete(Signature signature) throws NoSuchAlgorithmException, IOException {
 		if(signature == null) {
 			return;
 		}
@@ -475,7 +480,11 @@ public class Main extends MainLayout {
 		OutputStream output = null;
 		JpkiWrapper jpki = null;
 		try {
-			tmp = new File(Util.getMyDataDirectory(), "output.tmp");
+			File dir = Util.getMyDataDirectory();
+			if(!dir.exists()) {
+				dir.mkdirs();
+			}
+			tmp = new File(dir, "output.tmp");
 			output = new FileOutputStream(tmp);
 			jpki = new JpkiWrapper();
 			jpki.setApplicationName(APP_TITLE);
@@ -491,7 +500,7 @@ public class Main extends MainLayout {
 			Map<ButtonType, String> captions = new HashMap<ButtonType, String>();
 			captions.put(ButtonType.OK, "はい");
 			captions.put(ButtonType.CANCEL, "いいえ");
-			ButtonType result = Dialogs.show(AlertType.CONFIRMATION, stage, Dialogs.IMAGE_SUCCESS, null, "署名が完了しました。\nファイルに名前を付けて保存しますか？", captions);
+			ButtonType result = Dialogs.show(AlertType.CONFIRMATION, stage, Dialogs.IMAGE_SUCCESS, APP_WINDOW_TITLE, "署名が完了しました。\nファイルに名前を付けて保存しますか？", captions);
 			if(result == ButtonType.OK) {
 				Platform.runLater(() -> {
 					menu_save();
@@ -501,10 +510,10 @@ public class Main extends MainLayout {
 			if(e.getWinErrorCode() == JpkiException.SCARD_W_CANCELLED_BY_USER) {
 				//ユーザーがキャンセル操作をした場合はダイアログを表示しません。
 			} else {
-				Dialogs.showError(stage, e.getLocalizedMessage());
+				Dialogs.showError(stage, APP_WINDOW_TITLE, e.getLocalizedMessage());
 			}
 		} catch(IOException e) {
-			Dialogs.showError(e.getLocalizedMessage());
+			Dialogs.showError(stage, APP_WINDOW_TITLE, e.getLocalizedMessage());
 		} finally {
 			if(output != null) {
 				try { output.close(); } catch(Exception e) {}
@@ -517,7 +526,11 @@ public class Main extends MainLayout {
 		OutputStream output = null;
 		JpkiWrapper jpki = null;
 		try {
-			tmp = new File(Util.getMyDataDirectory(), "output.tmp");
+			File dir = Util.getMyDataDirectory();
+			if(!dir.exists()) {
+				dir.mkdirs();
+			}
+			tmp = new File(dir, "output.tmp");
 			output = new FileOutputStream(tmp);
 			jpki = new JpkiWrapper();
 			jpki.setApplicationName(APP_TITLE);
@@ -533,7 +546,7 @@ public class Main extends MainLayout {
 			Map<ButtonType, String> captions = new HashMap<ButtonType, String>();
 			captions.put(ButtonType.OK, "はい");
 			captions.put(ButtonType.CANCEL, "いいえ");
-			ButtonType result = Dialogs.show(AlertType.CONFIRMATION, stage, Dialogs.IMAGE_SUCCESS, null, "署名が完了しました。\nファイルに名前を付けて保存しますか？", captions);
+			ButtonType result = Dialogs.show(AlertType.CONFIRMATION, stage, Dialogs.IMAGE_SUCCESS, APP_WINDOW_TITLE, "署名が完了しました。\nファイルに名前を付けて保存しますか？", captions);
 			if(result == ButtonType.OK) {
 				Platform.runLater(() -> {
 					menu_save();
@@ -543,10 +556,10 @@ public class Main extends MainLayout {
 			if(e.getWinErrorCode() == JpkiException.SCARD_W_CANCELLED_BY_USER) {
 				//ユーザーがキャンセル操作をした場合はダイアログを表示しません。
 			} else {
-				Dialogs.showError(stage, e.getLocalizedMessage());
+				Dialogs.showError(stage, APP_WINDOW_TITLE, e.getLocalizedMessage());
 			}
 		} catch(IOException e) {
-			Dialogs.showError(e.getLocalizedMessage());
+			Dialogs.showError(stage, APP_WINDOW_TITLE, e.getLocalizedMessage());
 		} finally {
 			if(output != null) {
 				try { output.close(); } catch(Exception e) {}
