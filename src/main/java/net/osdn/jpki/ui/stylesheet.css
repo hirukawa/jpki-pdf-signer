@@ -1,0 +1,25 @@
+.signature-list {
+	-fx-pref-width: 216px;
+}
+.signature-list .scroll-bar:horizontal .increment-arrow,
+.signature-list .scroll-bar:horizontal .decrement-arrow,
+.signature-list .scroll-bar:horizontal .increment-button,
+.signature-list .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0;
+}
+
+.signature-cell-text {
+	-fx-font: 13px 'Meiryo';
+}
+
+.list-cell:selected {
+	-fx-background-color: -fx-accent;
+}
+.list-cell:selected .label {
+	-fx-text-fill: white;	
+}
+
+#pdf-page-number:disabled, #pdf-page-number .label {
+	-fx-opacity: 1.0;
+	-fx-text-fill: #666666;
+}

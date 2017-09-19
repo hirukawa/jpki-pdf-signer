@@ -1,0 +1,77 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+archivesBaseName = 'jpki-pdf-signer'
+version = '0.2'
+
+def defaultEncoding = 'UTF-8'
+tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
+tasks.withType(GroovyCompile).each { it.groovyOptions.encoding = defaultEncoding }
+
+javadoc {
+	options.charSet = 'UTF-8'
+	options.encoding = 'UTF-8'
+	options.stylesheetFile = new File(rootDir, 'javadoc.css')
+}
+
+repositories {
+	jcenter()
+}
+
+dependencies {
+	compile fileTree(dir: 'libs', include: ['**/*.jar'], excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
+}
+
+defaultTasks 'clean', 'exewrap_x86', 'exewrap_x64'
+
+jar {
+	archiveName = "${archivesBaseName}.jar"
+	manifest {
+		attributes "Specification-Version": "${version}"
+		attributes "Main-Class" : "net.osdn.jpki.Main"
+		attributes "Class-Path": configurations.compile.collect { relativePath(it) }.join(' ')
+		attributes "Splashscreen-Image": "img/splash.png"
+	}
+	from('src/main/java') {
+		include '**/*.css'
+	}
+	exclude('img/*.psd', 'ico/**')
+}
+
+task exewrap_x86(type: Exec, dependsOn: 'jar') {
+	setGroup("build")
+	setDescription('Assembles the executable.')
+	executable "${projectDir}/exewrap.exe"
+	args "-A", "x86",
+		"-g",
+		"-t", "1.8",
+		"-L", "libs",
+		"-e", "SHARED",
+		"-j", "${libsDir}/${archivesBaseName}.jar",
+		"-i", "src/main/resources/ico/app-icon.ico",
+		"-o", "${buildDir}/x86/${archivesBaseName}.exe",
+		"-p", "JPKI PDF SIGNER",
+		"-d", "PDF電子署名ツール",
+		"-c", "(C) 2017 HIRUKAWA Ryo",
+		"-V", "${version}",
+		"-v", "${version}"
+}
+
+task exewrap_x64(type: Exec, dependsOn: 'jar') {
+	setGroup("build")
+	setDescription('Assembles the executable.')
+	executable "${projectDir}/exewrap.exe"
+	args "-A", "x64",
+		"-g",
+		"-t", "1.8",
+		"-L", "libs",
+		"-e", "SHARED",
+		"-j", "${libsDir}/${archivesBaseName}.jar",
+		"-i", "src/main/resources/ico/app-icon.ico",
+		"-o", "${buildDir}/x64/${archivesBaseName}.exe",
+		"-p", "JPKI PDF SIGNER",
+		"-d", "PDF電子署名ツール",
+		"-c", "(C) 2017 HIRUKAWA Ryo",
+		"-V", "${version}",
+		"-v", "${version}"
+}
