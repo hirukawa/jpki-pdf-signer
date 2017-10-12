@@ -3,6 +3,7 @@ package net.osdn.jpki;
 import java.awt.SplashScreen;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
@@ -30,6 +32,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.stage.FileChooser.ExtensionFilter;
 import net.osdn.jpki.ui.MainLayout;
 import net.osdn.jpki.ui.Signature;
@@ -45,6 +48,7 @@ public class Main extends MainLayout {
 
 	private static volatile int count = 0;
 	private static Stage stage;
+	private static File lastSaveDir;
 	
 	public static void main(String[] args) {
 		if(count++ == 0) {
@@ -85,6 +89,14 @@ public class Main extends MainLayout {
 	}
 	
 	@Override
+	protected void stage_onCloseRequest(WindowEvent event) {
+		PDDocument document = pdfPane.getDocument();
+		if(document != null) {
+			try { document.close(); } catch(Exception e) {}
+		}
+	}
+
+	@Override
 	protected void menu_open() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("開く");
@@ -115,18 +127,13 @@ public class Main extends MainLayout {
 		
 		FileChooser fc = new FileChooser();
 		fc.setTitle("名前を付けて保存");
-		String s = Resources.getPreferences().get("lastSaveFile", null);
-		if(s != null) {
-			File lastSaveFile = new File(s);
-			while(lastSaveFile != null) {
-				if(lastSaveFile.exists() && lastSaveFile.isDirectory()) {
-					fc.setInitialDirectory(lastSaveFile);
-					break;
-				}
-				lastSaveFile = lastSaveFile.getParentFile();
+		if(lastSaveDir != null && lastSaveDir.isDirectory() && lastSaveDir.exists()) {
+			fc.setInitialDirectory(lastSaveDir);
+		} else {
+			lastSaveDir = null;
+			if(input != null) {
+				fc.setInitialDirectory(input.getParentFile());
 			}
-		} else if(input != null) {
-			fc.setInitialDirectory(input.getParentFile());
 		}
 		String defaultName = "signed.pdf";
 		if(input != null) {
@@ -140,7 +147,7 @@ public class Main extends MainLayout {
 		fc.setInitialFileName(defaultName);
 		File file = fc.showSaveDialog(stage);
 		if(file != null) {
-			Resources.getPreferences().put("lastSaveFile", file.getParent());
+			lastSaveDir = file.getParentFile();
 			if(dirty != null && dirty.exists()) {
 				OutputStream output = null;
 				try {
@@ -178,12 +185,24 @@ public class Main extends MainLayout {
 		}
 		
 		PDDocument document = null;
+		InputStream in = null;
 		try {
-			document = PDDocument.load(file);
+			document = pdfPane.getDocument();
+			if(document != null) {
+				try { document.close(); } catch(Exception e) {}
+				document = null;
+			}
+			in = new FileInputStream(file);
+			byte[] bytes = IOUtils.toByteArray(in);
+			document = PDDocument.load(bytes);
 			pdfPane.setDocument(document);
 			pdfPane.setPage(pageIndex);
 		} catch(Exception e) {
 			e.printStackTrace();
+		} finally {
+			if(in != null) {
+				try { in.close(); } catch(Exception e) {}
+			}
 		}
 		updatePagerButtons(document, pageIndex);
 	}

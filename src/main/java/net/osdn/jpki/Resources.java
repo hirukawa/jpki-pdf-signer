@@ -30,6 +30,8 @@ public class Resources {
 	public static final Image IMAGE_PAGE_LAST_BLACK_16PX = new Image(getResourceAsStream("/img/page-last-black-16px.png"));
 	public static final Image IMAGE_PAGE_LAST_WHITE_16PX = new Image(getResourceAsStream("/img/page-last-white-16px.png"));
 
+	public static final Image IMAGE_BROWSER_BLACK_16PX = new Image(getResourceAsStream("/img/browser-black-16px.png"));
+	public static final Image IMAGE_BROWSER_WHITE_16PX = new Image(getResourceAsStream("/img/browser-white-16px.png"));
 	
 	public static InputStream getResourceAsStream(String name) {
 		return Resources.class.getResourceAsStream(name);

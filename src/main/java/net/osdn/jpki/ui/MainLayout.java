@@ -32,9 +32,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import net.osdn.jpki.Main;
 import net.osdn.jpki.Resources;
+import net.osdn.pdf_brewer.ui.PagerButton;
+import net.osdn.pdf_brewer.ui.PagerMenu;
+import net.osdn.pdf_brewer.ui.PdfPane;
+import net.osdn.util.fx.input.KeyCombinations;
 
 public class MainLayout extends Application {
 	private static final int PREF_PDF_PANE_WIDTH = 612;
@@ -76,6 +81,12 @@ public class MainLayout extends Application {
 		signatureList.getItems().add(Signature.getInvisibleSignature());
 		signatureList.getItems().addAll(Signature.load());
 		
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			public void handle(WindowEvent event) {
+				stage_onCloseRequest(event);
+			}
+		});
+
 		stage.show();
 	}
 	
@@ -207,6 +218,33 @@ public class MainLayout extends Application {
 			}
 		});
 		
+		/*
+		MenuLabel lblOpenWebSite = new MenuLabel(
+			Resources.IMAGE_BROWSER_BLACK_16PX,
+			Resources.IMAGE_BROWSER_WHITE_16PX,
+			"ホームページを開く"
+		);
+		lblOpenWebSite.setOnMouseClicked(e -> {
+			System.out.println("!CLICK!");
+		});
+		Menu m = new Menu("hoge");
+		m.showingProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				System.out.println(">>>" + newValue);
+			}
+		});
+		m.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+			System.out.println("MCLICK");
+		});
+        MenuBar rightBar = new MenuBar(m);
+        Region spacer = new Region();
+        spacer.getStyleClass().add("menu-bar");
+        HBox.setHgrow(spacer, Priority.SOMETIMES);
+        HBox menuBars = new HBox(menuBar, spacer, rightBar);
+        */
+
+        
 		BorderPane bp1 = new BorderPane();
 		bp1.setCenter(pdfPane);
 		bp1.setRight(signatureList);
@@ -428,7 +466,7 @@ public class MainLayout extends Application {
 		menuPdfNext.setVisible(false);
 		menuPdfLast.setVisible(false);
 		menuPdfPageNumber.setVisible(false);
-		
+
 		menuBar.getMenus().addAll(
 			menuFile,
 			menuPdfFirst,
@@ -438,6 +476,9 @@ public class MainLayout extends Application {
 			menuPdfLast
 		);
 		return menuBar;
+	}
+	
+	protected void stage_onCloseRequest(WindowEvent event) {
 	}
 	
 	protected void onDragOver(DragEvent event) {
