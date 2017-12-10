@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 archivesBaseName = 'jpki-pdf-signer'
-version = '0.3.1'
+version = '0.3.2'
 
 def defaultEncoding = 'UTF-8'
 tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
@@ -47,7 +47,7 @@ task exewrap_x86(type: Exec, dependsOn: 'jar') {
 		"-t", "1.8.0.40",
 		"-L", "libs",
 		"-e", "SHARED",
-		"-j", "${libsDir}/${archivesBaseName}.jar",
+		"-j", "${libsDir}/${jar.archiveName}",
 		"-i", "src/main/resources/ico/app-icon.ico",
 		"-o", "${buildDir}/x86/${archivesBaseName}.exe",
 		"-p", "JPKI PDF SIGNER",
@@ -66,7 +66,7 @@ task exewrap_x64(type: Exec, dependsOn: 'jar') {
 		"-t", "1.8.0.40",
 		"-L", "libs",
 		"-e", "SHARED",
-		"-j", "${libsDir}/${archivesBaseName}.jar",
+		"-j", "${libsDir}/${jar.archiveName}",
 		"-i", "src/main/resources/ico/app-icon.ico",
 		"-o", "${buildDir}/x64/${archivesBaseName}.exe",
 		"-p", "JPKI PDF SIGNER",
