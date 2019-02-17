@@ -12,8 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.pdfbox.io.IOUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -166,7 +164,18 @@ public class Signature {
 	
 	private static String getFilename(byte[] image) throws NoSuchAlgorithmException {
 		MessageDigest md = MessageDigest.getInstance("MD5");
-		return DatatypeConverter.printHexBinary(md.digest(image)) + ".png";
+		return printHexBinary(md.digest(image)) + ".png";
+	}
+	
+	public static CharSequence printHexBinary(byte[] val) {
+		StringBuilder hex = new StringBuilder(val.length * 2);
+		for(int i = 0; i < val.length; i++) {
+			int h = (val[i] & 0xFF) >>> 4;
+			int l = val[i] & 0x0F;
+			hex.append((char)(h > 9 ? h + 55 : h + 48));
+			hex.append((char)(l > 9 ? l + 55 : l + 48));
+		}
+		return hex;
 	}
 	
 	private static class POJO {

@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 archivesBaseName = 'jpki-pdf-signer'
-version = '0.3.3'
+version = '0.4'
 
 def defaultEncoding = 'UTF-8'
 tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
@@ -19,59 +19,73 @@ repositories {
 }
 
 dependencies {
-	compile fileTree(dir: 'libs', include: ['**/*.jar'], excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
+	compile fileTree(dir: 'lib',
+		includes: ['**/*.jar'],
+		excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
 }
 
-defaultTasks 'clean', 'exewrap_x86', 'exewrap_x64'
+defaultTasks 'clean', 'build', 'exewrap'
 
 jar {
 	archiveName = "${archivesBaseName}.jar"
 	manifest {
 		attributes "Specification-Version": "${version}"
 		attributes "Main-Class" : "net.osdn.jpki.Main"
-		attributes "Class-Path": configurations.compile.collect { relativePath(it) }.join(' ')
 		attributes "Splashscreen-Image": "img/splash.png"
 	}
 	from('src/main/java') {
+		include '**/*.fxml'
 		include '**/*.css'
 	}
-	exclude('img/*.psd', 'ico/**')
+	exclude('img/*.psd', 'ico/**', 'psd/**')
 }
 
-task exewrap_x86(type: Exec, dependsOn: 'jar') {
+task copyLibraries(type: Copy) {
 	setGroup("build")
-	setDescription('Assembles the executable.')
-	executable "${projectDir}/exewrap.exe"
-	args "-A", "x86",
-		"-g",
-		"-t", "1.8.0.40",
-		"-L", "libs",
-		"-e", "SHARED",
-		"-j", "${libsDir}/${jar.archiveName}",
-		"-i", "src/main/resources/ico/app-icon.ico",
-		"-o", "${buildDir}/x86/${archivesBaseName}.exe",
-		"-p", "JPKI PDF SIGNER",
-		"-d", "PDF電子署名ツール",
-		"-c", "(C) 2017 HIRUKAWA Ryo",
-		"-V", "${version}",
-		"-v", "${version}"
+	setDescription("Copy dependency libraries.")
+	from (sourceSets.main.runtimeClasspath) {
+		include '*.jar'
+	}
+	into "${buildDir}/package/lib/"
 }
 
-task exewrap_x64(type: Exec, dependsOn: 'jar') {
+task exewrap(type: Exec, dependsOn: 'jar') {
 	setGroup("build")
 	setDescription('Assembles the executable.')
 	executable "${projectDir}/exewrap.exe"
 	args "-A", "x64",
 		"-g",
-		"-t", "1.8.0.40",
-		"-L", "libs",
+		"-t", "11",
+		"-a", "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:+UseSerialGC -XX:CICompilerCount=1 -Xverify:none -Xms128m",
+		"-L", "lib",
 		"-e", "SHARED",
 		"-j", "${libsDir}/${jar.archiveName}",
-		"-i", "src/main/resources/ico/app-icon.ico",
-		"-o", "${buildDir}/x64/${archivesBaseName}.exe",
+		"-i", "src/main/resources/ico/app.ico",
+		"-o", "${buildDir}/package/${archivesBaseName}.exe",
 		"-p", "JPKI PDF SIGNER",
 		"-d", "PDF電子署名ツール",
-		"-c", "(C) 2017 HIRUKAWA Ryo",
+		"-c", "(C) 2017-2019 HIRUKAWA Ryo",
 		"-V", "${version}",
 		"-v", "${version}"
 }
+
+
+task createJavaRuntime(type: Exec, dependsOn: ['jar', 'copyLibraries']) {
+	setGroup("build")
+	setDescription("Create Java Runtime.")
+	workingDir "${buildDir}/package/"
+	commandLine 'cmd', '/c', 'CreateJRE.bat', "${libsDir}\\${jar.archiveName}", "lib"
+}
+
+task initializeProjectFiles {
+	doLast {
+		if(file('src/main/java/Library.java').exists()) {
+			file('lib').mkdir()
+			delete "src/test"
+			delete "src/main/java/Library.java"
+		}
+	}
+}
+tasks.eclipseClasspath.dependsOn(cleanEclipseClasspath)
+tasks.eclipseClasspath.dependsOn(initializeProjectFiles)
+tasks.cleanEclipseClasspath.mustRunAfter(initializeProjectFiles)

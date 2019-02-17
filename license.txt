@@ -1,4 +1,4 @@
-Copyright (C) 2017 HIRUKAWA Ryo. All rights reserved.
+Copyright (C) 2017-2019 HIRUKAWA Ryo. All rights reserved.
 
 ソースコード形式であれバイナリ形式であれ、変更の有無に関わらず、
 以下の条件を満たす限りにおいて、再配布および使用を許可します:
