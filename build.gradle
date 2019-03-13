@@ -1,7 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
-archivesBaseName = 'jpki-pdf-signer'
 version = '0.4'
 
 def defaultEncoding = 'UTF-8'
@@ -11,6 +10,7 @@ tasks.withType(GroovyCompile).each { it.groovyOptions.encoding = defaultEncoding
 javadoc {
 	options.charSet = 'UTF-8'
 	options.encoding = 'UTF-8'
+	options.memberLevel = JavadocMemberLevel.PUBLIC
 	options.stylesheetFile = new File(rootDir, 'javadoc.css')
 }
 
@@ -27,11 +27,11 @@ dependencies {
 defaultTasks 'clean', 'build', 'exewrap'
 
 jar {
-	archiveName = "${archivesBaseName}.jar"
 	manifest {
 		attributes "Specification-Version": "${version}"
 		attributes "Main-Class" : "net.osdn.jpki.Main"
 		attributes "Splashscreen-Image": "img/splash.png"
+		attributes "Class-Path": configurations.runtime.collect { "lib/$it.name" }.join(' ')
 	}
 	from('src/main/java') {
 		include '**/*.fxml'
@@ -59,9 +59,9 @@ task exewrap(type: Exec, dependsOn: 'jar') {
 		"-a", "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:+UseSerialGC -XX:CICompilerCount=1 -Xverify:none -Xms128m",
 		"-L", "lib",
 		"-e", "SHARED",
-		"-j", "${libsDir}/${jar.archiveName}",
+		"-j", "${jar.archiveFile.get()}",
 		"-i", "src/main/resources/ico/app.ico",
-		"-o", "${buildDir}/package/${archivesBaseName}.exe",
+		"-o", "${buildDir}/package/${jar.baseName}.exe",
 		"-p", "JPKI PDF SIGNER",
 		"-d", "PDF電子署名ツール",
 		"-c", "(C) 2017-2019 HIRUKAWA Ryo",
@@ -74,7 +74,7 @@ task createJavaRuntime(type: Exec, dependsOn: ['jar', 'copyLibraries']) {
 	setGroup("build")
 	setDescription("Create Java Runtime.")
 	workingDir "${buildDir}/package/"
-	commandLine 'cmd', '/c', 'CreateJRE.bat', "${libsDir}\\${jar.archiveName}", "lib"
+	commandLine 'cmd', '/c', 'CreateJRE.bat', "${jar.archiveFile.get()}", "lib"
 }
 
 task initializeProjectFiles {
