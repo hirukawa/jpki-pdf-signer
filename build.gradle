@@ -13,22 +13,22 @@ repositories {
 }
 
 dependencies {
-	compile fileTree(dir: 'lib',
+	implementation fileTree(dir: 'lib',
 			includes: ['**/*.jar'],
 			excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
 
-	compile 'org.apache.pdfbox:pdfbox:2.0.17'
-	compile 'org.apache.pdfbox:fontbox:2.0.17'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.17'
+	implementation 'org.apache.pdfbox:fontbox:2.0.17'
 
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
 
-	compile 'org.kordamp.ikonli:ikonli-javafx:11.3.4'
-	compile 'org.kordamp.ikonli:ikonli-materialdesign-pack:11.3.4'
+	implementation 'org.kordamp.ikonli:ikonli-javafx:11.3.4'
+	implementation 'org.kordamp.ikonli:ikonli-materialdesign-pack:11.3.4'
 
 	// jpki-wrapper dependencies
-	compile 'org.bouncycastle:bcpkix-jdk15on:1.64'
-	compile 'net.java.dev.jna:jna:5.5.0'
-	compile 'net.java.dev.jna:jna-platform:5.5.0'
+	runtimeOnly 'org.bouncycastle:bcpkix-jdk15on:1.64'
+	runtimeOnly 'net.java.dev.jna:jna:5.5.0'
+	runtimeOnly 'net.java.dev.jna:jna-platform:5.5.0'
 }
 
 sourceSets.main.resources {
@@ -46,7 +46,7 @@ jar {
 		attributes "Specification-Version": "${project.version}"
 		attributes "Main-Class" : "net.osdn.jpki.pdf_signer.Main"
 		attributes "Splashscreen-Image": "img/splash.png"
-		attributes "Class-Path": configurations.runtime.collect { "lib/$it.name" }.join(' ')
+		attributes "Class-Path": sourceSets.main.runtimeClasspath.collect { "lib/$it.name" }.join(' ')
 	}
 	into('net/osdn/jpki/pdf_signer') {
 		from("${projectDir}") {
