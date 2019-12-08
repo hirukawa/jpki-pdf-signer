@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import net.osdn.jpki.pdf_signer.SignatureListCell?>
+
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+        stylesheets="@SignatureListCell.css">
+    <StackPane alignment="CENTER">
+        <prefWidth><SignatureListCell fx:constant="MAX_IMAGE_WIDTH"/></prefWidth>
+        <prefHeight><SignatureListCell fx:constant="MAX_IMAGE_HEIGHT"/></prefHeight>
+        <ImageView fx:id="ivImage"
+                   preserveRatio="false" />
+    </StackPane>
+    <VBox alignment="CENTER_LEFT">
+        <Label fx:id="lblTitle"/>
+        <Label fx:id="lblDescription"/>
+    </VBox>
+</HBox>

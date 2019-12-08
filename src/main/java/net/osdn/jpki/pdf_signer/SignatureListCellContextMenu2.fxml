@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<ContextMenu xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <items>
+        <MenuItem
+                fx:id="menuEditSignature"
+                text="編集">
+            <graphic><FontIcon iconLiteral="mdi-pencil"/></graphic>
+        </MenuItem>
+        <MenuItem
+                fx:id="menuRemoveSignature"
+                text="削除">
+            <graphic><FontIcon iconLiteral="mdi-delete"/></graphic>
+        </MenuItem>
+    </items>
+</ContextMenu>

@@ -1,0 +1,6 @@
+.dialog-pane > .content {
+    -fx-padding: 0.833em 0.833em 0 0.833em;
+}
+#ivImage {
+    -fx-background-color: white;
+}

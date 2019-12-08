@@ -1,0 +1,73 @@
+#background {
+	-fx-background-color: rgb(39, 40, 34);
+	-fx-background-radius: 5;
+	-fx-effect: dropshadow(three-pass-box, black, 10, 0, 1, 1);
+}
+
+#btnClose {
+	-fx-font-size: 16;
+	-fx-padding: 1 8 0 0;
+	-fx-min-width: 0;
+	-fx-min-height: 0;
+	-fx-background-color: transparent;
+	-fx-background-radius: 0;
+	-fx-background-insets: 0;
+	-fx-text-fill: #808080;
+}
+#btnClose:hover {
+	-fx-text-fill: #F0F0F0;
+}
+#btnClose:pressed {
+	-fx-text-fill: #C0C0C0;
+}
+
+#lblTitle {
+	-fx-font-size: 12;
+	-fx-wrap-text: false;
+	-fx-padding: 0 18 0 0;
+}
+
+#lblMessage {
+	-fx-font-size: 12;
+	-fx-wrap-text: true;
+}
+
+.scroll-pane {
+	-fx-min-height: 0;
+	-fx-hbar-policy: never;
+	-fx-vbar-policy: as-needed;
+	-fx-background-color: transparent;
+}
+.scroll-pane .viewport {
+	-fx-background-color: transparent;
+}
+.scroll-bar:vertical {
+	-fx-background-color: transparent;
+	-fx-padding: 0;
+}
+.scroll-bar:vertical .track {
+	-fx-background-color: transparent;
+}
+.scroll-bar:vertical .thumb {
+	-fx-background-color: #474844;
+	-fx-background-insets: 0;
+	-fx-background-radius: 0;
+}
+.scroll-bar:vertical .thumb:hover {
+	-fx-background-color: #525250;
+}
+.scroll-bar:vertical .thumb:pressed {
+	-fx-background-color: #636460;
+}
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+	-fx-padding: 0px;
+}
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow {
+	-fx-padding: 0 5 0 5;
+}
+.scroll-bar:horizontal .increment-arrow,
+.scroll-bar:horizontal .decrement-arrow {
+	-fx-padding: 5 0 5 0;
+}

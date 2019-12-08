@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<ContextMenu xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <items>
+        <MenuItem
+                fx:id="menuAddSignature"
+                text="新しい印影の追加">
+            <graphic><FontIcon iconLiteral="mdi-plus"/></graphic>
+        </MenuItem>
+    </items>
+</ContextMenu>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<?import javafx.scene.image.ImageView?>
+<?import net.osdn.util.javafx.scene.layout.ClipPane?>
+<?import net.osdn.util.javafx.scene.control.pdf.Pager?>
+<?import net.osdn.util.javafx.scene.control.pdf.PdfView?>
+<?import net.osdn.jpki.pdf_signer.control.Toast?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           stylesheets="@Main.css">
+
+    <BorderPane>
+        <top>
+            <MenuBar fx:id="menuBar">
+                <menus>
+                    <Menu fx:id="menuFile" text="ファイル">
+                        <MenuItem
+                            fx:id="menuFileOpen"
+                            text="開く..."
+                            mnemonicParsing="false"
+                            accelerator="Shortcut+O">
+                            <graphic><FontIcon iconLiteral="mdi-folder"/></graphic>
+                        </MenuItem>
+                        <MenuItem
+                            fx:id="menuFileSave"
+                            text="名前を付けて保存..."
+                            mnemonicParsing="false"
+                            accelerator="Shortcut+S">
+                            <graphic><FontIcon iconLiteral="mdi-content-save"/></graphic>
+                        </MenuItem>
+                        <SeparatorMenuItem/>
+                        <MenuItem
+                            fx:id="menuFileExit"
+                            text="終了"
+                            mnemonicParsing="false">
+                        </MenuItem>
+                    </Menu>
+                    <Menu fx:id="menuHelp" text="ヘルプ">
+                        <MenuItem
+                            fx:id="menuHelpAbout"
+                            text="このソフトウェアについて..."
+                            mnemonicParsing="false">
+                            <graphic><FontIcon iconLiteral="mdi-information"/></graphic>
+                        </MenuItem>
+                    </Menu>
+                </menus>
+            </MenuBar>
+        </top>
+        <center>
+            <BorderPane>
+                <top>
+                    <Pager fx:id="pager"/>
+                </top>
+                <center>
+                    <StackPane>
+                        <PdfView fx:id="pdfView"/>
+                        <ClipPane mouseTransparent="true">
+                            <ImageView fx:id="ivCursor"/>
+                        </ClipPane>
+                    </StackPane>
+                </center>
+            </BorderPane>
+        </center>
+        <right>
+            <VBox>
+                <HBox fx:id="buttonBox"
+                        alignment="CENTER_RIGHT">
+                    <Button
+                            fx:id="btnRemoveSignature"
+                            text="削除"
+                            focusTraversable="false">
+                        <graphic><FontIcon iconLiteral="mdi-delete"/></graphic>
+                    </Button>
+                    <Button
+                        fx:id="btnEditSignature"
+                        text="編集"
+                        focusTraversable="false">
+                        <graphic><FontIcon iconLiteral="mdi-pencil"/></graphic>
+                    </Button>
+                    <Button
+                        fx:id="btnAddSignature"
+                        text="追加"
+                        focusTraversable="false">
+                        <graphic><FontIcon iconLiteral="mdi-plus"/></graphic>
+                    </Button>
+                </HBox>
+                <ListView fx:id="lvSignature"
+                    prefWidth="216"
+                    VBox.vgrow="ALWAYS"
+                    focusTraversable="false"/>
+            </VBox>
+        </right>
+    </BorderPane>
+
+    <AnchorPane pickOnBounds="false">
+        <Toast fx:id="toast"
+               AnchorPane.rightAnchor="7"
+               AnchorPane.bottomAnchor="7"/>
+    </AnchorPane>
+</StackPane>

@@ -1,0 +1,112 @@
+.root {
+	-fx-font-family: "Meiryo";
+	-fx-font-size: 12px;
+}
+
+#pdfView {
+    -fx-background-color: #606060;
+}
+
+FontIcon {
+	-fx-icon-size: 17;
+	-fx-icon-color: -fx-selection-bar;
+}
+.menu-item:focused FontIcon {
+	-fx-icon-color: -fx-selection-bar-text;
+}
+
+.list-view {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+.list-cell {
+    -fx-padding: 0px;
+}
+.list-cell:selected {
+    -fx-background-color: -fx-accent;
+}
+.list-cell:selected .label {
+    -fx-text-fill: white;
+}
+
+#buttonBox {
+	-fx-background-color: #303030;
+}
+#buttonBox > .label {
+	-fx-alignment: center;
+	-fx-min-width: 80px;
+	-fx-font-size: 14px;
+	-fx-text-fill: #F2F2F2;
+}
+#buttonBox .button {
+    -fx-padding: 0 10px 0 7px;
+	-fx-min-height: 25px;
+	-fx-pref-height: 25px;
+    -fx-min-width: 40px;
+	-fx-background-insets: 0;
+	-fx-background-radius: 0;
+	-fx-background-color: transparent;
+	-fx-text-fill: #CCCCCC;
+	-fx-skin: "net.osdn.util.javafx.scene.control.pdf.TransitionButtonSkin";
+}
+#buttonBox .button:focused {
+	-fx-background-color: rgba(255, 255, 255, 0.2);
+}
+#buttonBox .button:hover {
+	-fx-background-color: rgba(255, 255, 255, 0.2);
+	-fx-text-fill: #FFFFFF;
+}
+#buttonBox .button:pressed {
+	-fx-background-color: rgba(255, 255, 255, 0.1);
+	-fx-text-fill: #CCCCCC;
+}
+#buttonBox FontIcon {
+	-fx-icon-size: 17;
+	-fx-icon-color: #CCCCCC;
+}
+#buttonBox .button:hover FontIcon {
+	-fx-icon-color: #FFFFFF;
+}
+
+.scroll-bar:horizontal{
+	-fx-background-color: #F1F1F1;
+	-fx-background-insets: 0;
+	-fx-padding: 1 0 1 0;
+}
+.scroll-bar:vertical{
+	-fx-background-color: #F1F1F1;
+	-fx-background-insets: 0;
+	-fx-padding: 0 1 0 1;
+}
+.scroll-bar:horizontal .track ,
+.scroll-bar:vertical .track{
+	-fx-background-color: #F1F1F1;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+	-fx-background-color: #C1C1C1;
+	-fx-background-insets: 0, 0, 0;
+	-fx-background-radius: 0;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+	-fx-background-color: #A8A8A8;
+}
+.scroll-bar:horizontal .thumb:pressed,
+.scroll-bar:vertical .thumb:pressed {
+	-fx-background-color: #787878;
+}
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button,
+.scroll-bar:horizontal .increment-button,
+.scroll-bar:horizontal .decrement-button {
+	-fx-padding: 0px;
+}
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow {
+	-fx-padding: 0 5 0 5;
+}
+.scroll-bar:horizontal .increment-arrow,
+.scroll-bar:horizontal .decrement-arrow {
+	-fx-padding: 5 0 5 0;
+}

@@ -1,0 +1,90 @@
+(C) 2017-2020 HIRUKAWA Ryo
+
+本ソフトウェアおよび関連するドキュメント（以下「本ソフトウェア」）のコピーを取
+得するすべての人に、本ソフトウェアを無制限に扱うことを無償で許可します。これに
+は、使用、複製、変更、マージ、掲載、頒布、サブライセンス供与、販売、および、本
+ソフトウェアを提供する相手に対して許可する権利が含まれますが、これに限定されま
+せん。ただし、以下の条件に従うものとします。
+
+上記の著作権表示および本許諾表示を、本ソフトウェアのすべての複製または重要な部
+分に記載するものとします。
+
+本ソフトウェアは「現状のまま」提供され、明示黙示を問わず、商業的な使用可能性の
+保証、特定の目的に対する適合性の保証、権利の非侵害性の保証を含むいかなる保証も
+ありません。事由のいかんを問わず、作者、著作権者は、契約行為、不法行為、または
+それ以外であろうと、本ソフトウェアの使用、その他の扱い、またはこれに関連して生
+じる損害、その他について一切責任を負わないものとします。
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+本ソフトウェアの実行には地方公共団体情報システム機構が提供する公的個人認証サー
+ビス・利用者クライアントソフトが必要です。公的個人認証サービス・利用者クライア
+ントソフトは、公的個人認証サービスが提供する電子証明書を取り扱うソフトウェアを
+開発するためのライブラリです。API の技術仕様は下記サイトで公開されています。
+
+* 利用者クライアントソフトに係る技術仕様について
+  https://www.j-lis.go.jp/jpki/procedure/procedure1_2_3.html
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+本ソフトウェアの配布物には、本ソフトウェアとは別のライセンス条件で再配布される
+以下の著作物が含まれています。これらのソフトウェアに貢献されたすべての方々に心
+から感謝します。
+
+
+* Liberica JDK
+  https://bell-sw.com/java11
+
+  Liberica JDK is distribution of the OpenJDK built by BellSoft LTD.
+  OpenJDK code itself is licensed under GPL v2 with Classpath Exception.
+  https://openjdk.java.net/legal/gplv2+ce.html
+
+
+* Bouncy Castle
+  https://www.bouncycastle.org/java.html
+
+  Copyright (c) 2000 - 2019 The Legion of the Bouncy Castle Inc.
+  https://www.bouncycastle.org/licence.html
+
+
+* Apache PDFBox - A Java PDF Library
+  https://pdfbox.apache.org/
+
+  Copyright © 2009–2019 The Apache Software Foundation.
+  Licensed under the Apache License, Version 2.0.
+  https://www.apache.org/licenses/LICENSE-2.0
+
+
+* Icon packs for Java applications (ikonli)
+  https://aalmiray.github.io/ikonli/
+
+  licensed under the Apache License Version 2.0, January 2004
+  http://www.apache.org/licenses/
+
+
+* Jackson  databind, annotations, core
+  https://github.com/FasterXML/jackson-databind
+  https://github.com/FasterXML/jackson-annotations
+  https://github.com/FasterXML/jackson-core
+
+  Licensed under Apache License 2.0.
+  https://github.com/FasterXML/jackson-databind/blob/master/LICENSE
+  https://github.com/FasterXML/jackson-annotations/blob/master/LICENSE
+  https://github.com/FasterXML/jackson-core/blob/master/LICENSE
+
+
+* Java Native Access (JNA)
+  https://github.com/java-native-access/jna
+
+  This library is licensed under the LGPL, version 2.1 or later,
+  and (from version 4.0 onward) the Apache Software License, version 2.0.
+  Commercial license arrangements are negotiable.
+  https://github.com/java-native-access/jna/blob/master/LICENSE
+
+
+* Apache Commons Logging
+  https://commons.apache.org/proper/commons-logging/
+
+  Copyright © 2001-2014 The Apache Software Foundation. All Rights Reserved.
+  http://www.apache.org/licenses/LICENSE-2.0
+

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import net.osdn.jpki.pdf_signer.SignatureListCell?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@SignatureDialog.css">
+    <left>
+        <VBox spacing="10">
+            <Button fx:id="btnBrowse"
+                    text="ファイル参照...">
+                <maxWidth><Double fx:constant="MAX_VALUE"/></maxWidth>
+            </Button>
+            <StackPane
+                    style="-fx-background-color: white;">
+                <prefWidth><SignatureListCell fx:constant="MAX_IMAGE_WIDTH"/></prefWidth>
+                <prefHeight><SignatureListCell fx:constant="MAX_IMAGE_HEIGHT"/></prefHeight>
+                <ImageView fx:id="ivImage"
+                        preserveRatio="false" />
+            </StackPane>
+        </VBox>
+    </left>
+    <center>
+        <GridPane hgap="5" vgap="10">
+            <padding><Insets left="10"/></padding>
+
+            <Label text="表示名"
+                    GridPane.rowIndex="0"
+                    GridPane.columnIndex="0">
+                <padding><Insets right="5"/></padding>
+            </Label>
+            <TextField
+                    fx:id="tfTitle"
+                    prefWidth="0"
+                    GridPane.rowIndex="0"
+                    GridPane.columnIndex="1"
+                    GridPane.columnSpan="2"/>
+
+            <Label text="横の長さ"
+                    GridPane.rowIndex="1"
+                    GridPane.columnIndex="0">
+                <padding><Insets right="5"/></padding>
+            </Label>
+            <TextField
+                    fx:id="tfWidthMillis"
+                    prefWidth="60"
+                    alignment="BASELINE_RIGHT"
+                    GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="ミリメートル"
+                    GridPane.rowIndex="1"
+                    GridPane.columnIndex="2"/>
+
+            <Label text="縦の長さ"
+                    GridPane.rowIndex="2"
+                    GridPane.columnIndex="0">
+                <padding><Insets right="5"/></padding>
+            </Label>
+            <TextField
+                    fx:id="tfHeightMillis"
+                    prefWidth="60"
+                    alignment="BASELINE_RIGHT"
+                    GridPane.rowIndex="2"
+                    GridPane.columnIndex="1"/>
+            <Label text="ミリメートル"
+                   GridPane.rowIndex="2"
+                   GridPane.columnIndex="2"/>
+        </GridPane>
+    </center>
+</BorderPane>
