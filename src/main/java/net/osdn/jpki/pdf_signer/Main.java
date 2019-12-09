@@ -89,7 +89,7 @@ public class Main extends SingletonApplication implements Initializable {
     public void start(Stage primaryStage) throws Exception {
         Parent root = Fxml.load(this);
 
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/img/app-icon-16px.png")));
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/img/app-icon-48px.png")));
         primaryStage.setTitle(APPLICATION_NAME + " " + APPLICATION_VERSION);
 
         Scene scene = new Scene(root);
@@ -234,6 +234,24 @@ public class Main extends SingletonApplication implements Initializable {
 
     void stage_onCloseRequest(WindowEvent event) {
         Platform.exit();
+
+        // UWPアプリとして実行していてアプリを終了せずにアンインストール操作をすると、onCloseRequestは呼ばれるものの、
+        // なぜかプロセスが約30秒残留してしまいアンインストールに時間がかかります。
+        // この問題を回避するために、UWPとして実行されている場合は
+        // 500ミリ秒後に System.exit(0); を呼び出して強制的にプロセスを終了させます。
+        // アプリケーションディレクトリに "AppxManifest.xml" があるかどうかで、UWPアプリ実行かどうか判定します。
+        if (Files.exists(Datastore.getApplicationDirectory().resolve("AppxManifest.xml"))) {
+            new Thread() {
+                {
+                    setDaemon(true);
+                }
+                @Override
+                public void run() {
+                    try { Thread.sleep(500); } catch(InterruptedException ignore) {}
+                    System.exit(0);
+                }
+            }.start();
+        }
     }
 
     void scene_onDragOver(DragEvent event) {

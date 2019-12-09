@@ -1,6 +1,6 @@
 apply plugin: 'java'
 
-version = '0.5'
+version = '1.0'
 
 tasks.withType(JavaCompile) {
 	sourceCompatibility = 11
