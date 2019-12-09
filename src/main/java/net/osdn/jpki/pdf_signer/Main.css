@@ -3,10 +3,6 @@
 	-fx-font-size: 12px;
 }
 
-#pdfView {
-    -fx-background-color: #606060;
-}
-
 FontIcon {
 	-fx-icon-size: 17;
 	-fx-icon-color: -fx-selection-bar;

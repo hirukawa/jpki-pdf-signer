@@ -62,6 +62,11 @@
   http://www.apache.org/licenses/
 
 
+* 落書きアイコン
+  手書き風のかわいい絵文字アイコン・イラスト無料素材
+  https://rakugakiicon.com/
+
+
 * Jackson  databind, annotations, core
   https://github.com/FasterXML/jackson-databind
   https://github.com/FasterXML/jackson-annotations

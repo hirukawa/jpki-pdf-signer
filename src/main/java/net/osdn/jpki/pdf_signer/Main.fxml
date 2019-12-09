@@ -13,6 +13,7 @@
 <?import net.osdn.util.javafx.scene.control.pdf.PdfView?>
 <?import net.osdn.jpki.pdf_signer.control.Toast?>
 
+<?import javafx.geometry.Insets?>
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
            stylesheets="@Main.css">
 
@@ -59,7 +60,8 @@
                     <Pager fx:id="pager"/>
                 </top>
                 <center>
-                    <StackPane>
+                    <StackPane style="-fx-background-color:#606060">
+                        <padding><Insets right="1"/></padding>
                         <PdfView fx:id="pdfView"/>
                         <ClipPane mouseTransparent="true">
                             <ImageView fx:id="ivCursor"/>
