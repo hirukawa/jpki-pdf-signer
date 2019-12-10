@@ -4,9 +4,9 @@
 	xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
 	xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
 	<Identity
-		Name="net.osdn.jpki"
-		Version="1.0.0.0"
-		Publisher="CN=MyName"
+		Name="64139HIRUKAWARyo.JPKIPDFSIGNER"
+		Version="1.0.0"
+		Publisher="CN=4FB0E260-EF4B-4899-9A2A-3A4A5AE42199"
 		ProcessorArchitecture="x64" />
 	<Properties>
 		<DisplayName>JPKI PDF SIGNER</DisplayName>
@@ -27,7 +27,7 @@
 	</Capabilities>
 	<Applications>
 		<Application
-			Id="net.osdn.jpki"
+			Id="App"
 			Executable="jpki-pdf-signer.exe"
 			EntryPoint="Windows.FullTrustApplication">
 			<uap:VisualElements

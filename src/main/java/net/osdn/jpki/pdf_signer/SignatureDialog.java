@@ -68,6 +68,8 @@ public class SignatureDialog extends DialogEx<Signature> implements Initializabl
 			tfTitle.setText(signature.getTitle());
 			widthMillisProperty.set(signature.getWidthMillis());
 			heightMillisProperty.set(signature.getHeightMillis());
+		} else {
+			btnBrowse.requestFocus();
 		}
 	}
 

@@ -3,6 +3,7 @@ package net.osdn.jpki.pdf_signer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -50,6 +51,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -90,7 +92,20 @@ public class Main extends SingletonApplication implements Initializable {
         Parent root = Fxml.load(this);
 
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/img/app-icon-48px.png")));
-        primaryStage.setTitle(APPLICATION_NAME + " " + APPLICATION_VERSION);
+        primaryStage.titleProperty().bind(new StringBinding() {
+            {
+                bind(inputFileProperty);
+            }
+            @Override
+            protected String computeValue() {
+                try {
+                    return (inputFileProperty.get() != null ? inputFileProperty.get().getCanonicalPath() + " - " : "")
+                            + APPLICATION_NAME + " " + APPLICATION_VERSION;
+                } catch(IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        });
 
         Scene scene = new Scene(root);
         scene.setOnDragOver(wrap(this::scene_onDragOver));
@@ -155,8 +170,8 @@ public class Main extends SingletonApplication implements Initializable {
     @FXML Button              btnAddSignature;
     @FXML ListView<Signature> lvSignature;
     ObjectBinding<Signature>  signatureBinding;
+    ObjectProperty<File>      inputFileProperty = new SimpleObjectProperty<File>();
     ObjectProperty<File>      signedTemporaryFileProperty = new SimpleObjectProperty<File>();
-    File                      inputFile;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -268,7 +283,7 @@ public class Main extends SingletonApplication implements Initializable {
             getPrimaryStage().toFront();
             toast.hide();
             signedTemporaryFileProperty.set(null);
-            inputFile = file;
+            inputFileProperty.set(file);
             pdfView.load(file);
             event.setDropCompleted(true);
         }
@@ -295,7 +310,7 @@ public class Main extends SingletonApplication implements Initializable {
             preferences.put("lastOpenDirectory", file.getParentFile().getAbsolutePath());
             if(isAcceptable(file)) {
                 signedTemporaryFileProperty.set(null);
-                inputFile = file;
+                inputFileProperty.set(file);
                 pdfView.load(file);
             }
         }
@@ -303,7 +318,7 @@ public class Main extends SingletonApplication implements Initializable {
 
     void menuFileSave_onAction(ActionEvent event) throws IOException {
         toast.hide();
-        String defaultName = inputFile.getName();
+        String defaultName = inputFileProperty.get().getName();
         int i = defaultName.lastIndexOf('.');
         if(i > 0) {
             defaultName = defaultName.substring(0, i);
@@ -313,7 +328,7 @@ public class Main extends SingletonApplication implements Initializable {
         FileChooser fc = new FileChooser();
         fc.setTitle("名前を付けて保存");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
-        fc.setInitialDirectory(inputFile.getParentFile());
+        fc.setInitialDirectory(inputFileProperty.get().getParentFile());
         fc.setInitialFileName(defaultName);
 
         File file = fc.showSaveDialog(getPrimaryStage());
