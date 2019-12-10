@@ -5,7 +5,7 @@ https://blogs.osdn.jp/2018/11/28/java-uwp.html
 
 (2) makepri createconfig /cf priconfig.xml /dq ja-JP
 
-(3) makepri new /pr jpki-pdf-signer /cf priconfig.xml
+(3) makepri new /pr jpki-pdf-signer /cf priconfig.xml /of jpki-pdf-signer\resources.pri
 
 (4) makeappx pack /d jpki-pdf-signer /p jpki-pdf-signer.appx /o /l /nv
 
