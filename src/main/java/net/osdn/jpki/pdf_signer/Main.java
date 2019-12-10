@@ -409,8 +409,15 @@ public class Main extends SingletonApplication implements Initializable {
         }
 
         try {
-            if(event.isPrimaryButtonDown() && pdfView.getDocument() != null && checkJpkiAvailability()) {
-                ButtonType result = Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
+            if(!event.isPrimaryButtonDown()) {
+                return;
+            } else if(pdfView.getDocument() == null) {
+                toast.show(Toast.GREEN,
+                        "はじめに",
+                        "PDFファイルをこのウィンドウにドラッグ&ドロップして表示しましょう。");
+            } else if(checkJpkiAvailability()) {
+                ButtonType result = Dialogs.showConfirmation(getPrimaryStage(),
+                        APPLICATION_NAME + " " + APPLICATION_VERSION,
                         "印影を使わずに電子署名しますか？");
                 if(result == ButtonType.YES) {
                     PDDocument document = pdfView.getDocument();
@@ -421,7 +428,8 @@ public class Main extends SingletonApplication implements Initializable {
                         signedTemporaryFileProperty.set(tmpFile);
                         pdfView.load(tmpFile, pageIndex);
 
-                        result = Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
+                        result = Dialogs.showConfirmation(getPrimaryStage(),
+                                APPLICATION_NAME + " " + APPLICATION_VERSION,
                                 "署名が完了しました。\nファイルに名前を付けて保存しますか？");
                         if(result == ButtonType.YES) {
                             menuFileSave.fire();
