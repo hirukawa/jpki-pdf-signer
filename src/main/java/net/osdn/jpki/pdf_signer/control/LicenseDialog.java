@@ -47,9 +47,10 @@ public class LicenseDialog extends DialogEx<Void> {
 
 	private static final Pattern URL_PATTERN = Pattern.compile("https?://\\S+");
 
-	public LicenseDialog(Window owner, String license) throws IOException {
+	public LicenseDialog(Window owner, String title, String license) throws IOException {
 		super(owner);
 
+		setTitle(title);
 		Node content = Fxml.load(this);
 		getDialogPane().setContent(content);
 		getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);

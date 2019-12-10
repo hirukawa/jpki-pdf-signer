@@ -343,7 +343,7 @@ public class Main extends SingletonApplication implements Initializable {
 
     void menuHelpAbout_onAction(ActionEvent event) throws IOException {
         String license = Datastore.getLicense();
-        LicenseDialog dialog = new LicenseDialog(getPrimaryStage(), license);
+        LicenseDialog dialog = new LicenseDialog(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION, license);
         dialog.showAndWait();
     }
 
@@ -410,7 +410,7 @@ public class Main extends SingletonApplication implements Initializable {
 
         try {
             if(event.isPrimaryButtonDown() && pdfView.getDocument() != null && checkJpkiAvailability()) {
-                ButtonType result = Dialogs.showConfirmation(getPrimaryStage(),
+                ButtonType result = Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
                         "印影を使わずに電子署名しますか？");
                 if(result == ButtonType.YES) {
                     PDDocument document = pdfView.getDocument();
@@ -421,7 +421,7 @@ public class Main extends SingletonApplication implements Initializable {
                         signedTemporaryFileProperty.set(tmpFile);
                         pdfView.load(tmpFile, pageIndex);
 
-                        result = Dialogs.showConfirmation (getPrimaryStage(),
+                        result = Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
                                 "署名が完了しました。\nファイルに名前を付けて保存しますか？");
                         if(result == ButtonType.YES) {
                             menuFileSave.fire();
@@ -520,7 +520,7 @@ public class Main extends SingletonApplication implements Initializable {
             signedTemporaryFileProperty.set(tmpFile);
             pdfView.load(tmpFile, pageIndex);
 
-            ButtonType result = Dialogs.showConfirmation(getPrimaryStage(),
+            ButtonType result = Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
                     "署名が完了しました。\nファイルに名前を付けて保存しますか？");
             if(result == ButtonType.YES) {
                 menuFileSave.fire();
