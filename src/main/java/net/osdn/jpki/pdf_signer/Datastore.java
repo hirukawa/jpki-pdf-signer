@@ -125,6 +125,10 @@ public class Datastore {
 		return version;
 	}
 
+	public static boolean isRunningAsUWP() {
+		return Files.exists(Datastore.getApplicationDirectory().resolve("AppxManifest.xml"));
+	}
+
 	public static String getLicense() throws IOException {
 		InputStream is = null;
 		BufferedReader reader = null;

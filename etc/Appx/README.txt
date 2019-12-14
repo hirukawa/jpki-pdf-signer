@@ -12,7 +12,7 @@ https://blogs.osdn.jp/2018/11/28/java-uwp.html
 - - - -
 自己署名
 
-(5) makecert -r -n "CN=MyName" -sv my-sample.pvk my-sample.cer
+(5) makecert -r -n "CN=4FB0E260-EF4B-4899-9A2A-3A4A5AE42199" -sv my-sample.pvk my-sample.cer
 
 (6) pvk2pfx -pvk my-sample.pvk -spc my-sample.cer -pfx my-sample.pfx
 

@@ -255,7 +255,7 @@ public class Main extends SingletonApplication implements Initializable {
         // この問題を回避するために、UWPとして実行されている場合は
         // 500ミリ秒後に System.exit(0); を呼び出して強制的にプロセスを終了させます。
         // アプリケーションディレクトリに "AppxManifest.xml" があるかどうかで、UWPアプリ実行かどうか判定します。
-        if (Files.exists(Datastore.getApplicationDirectory().resolve("AppxManifest.xml"))) {
+        if (Datastore.isRunningAsUWP()) {
             new Thread() {
                 {
                     setDaemon(true);
@@ -554,15 +554,23 @@ public class Main extends SingletonApplication implements Initializable {
     protected boolean checkJpkiAvailability() {
         boolean isAvailable = JpkiWrapper.isAvailable();
         if(!isAvailable) {
-            Runnable actionOnClick = wrap(() -> {
-                toast.hide();
-                Desktop.getDesktop().browse(URI.create("https://www.jpki.go.jp/download/win.html"));
-            });
-            toast.show(Toast.GREEN, "事前準備", ""
-                    + "JPKI 利用者クライアントソフトをインストールしてください。\n"
-                    + "ここをクリックするとブラウザーでダウンロードサイトを開きます。",
-                    null,
-                    actionOnClick);
+            // JPKI 利用者クライアントソフトがインストールされていない場合、
+            // インストールを促すために、クリックで公的個人認証サービスのウェブサイトが開くようにします。
+            // ただし、Microsoft Storeアプリではストア以外でのアプリインストールを促すことが禁止されているため
+            // UWPとして実行されている場合にはウェブサイトを開く機能を提供せずメッセージ表示のみに留めています。
+            if(Datastore.isRunningAsUWP()) {
+                toast.show(Toast.GREEN, "構成", "JPKI 利用者クライアントソフトが見つかりません。");
+            } else {
+                Runnable actionOnClick = wrap(() -> {
+                    toast.hide();
+                    Desktop.getDesktop().browse(URI.create("https://www.jpki.go.jp/download/win.html"));
+                });
+                toast.show(Toast.GREEN, "事前準備", ""
+                                + "JPKI 利用者クライアントソフトをインストールしてください。\n"
+                                + "ここをクリックするとブラウザーでダウンロードサイトを開きます。",
+                        null,
+                        actionOnClick);
+            }
         }
         return isAvailable;
     }
