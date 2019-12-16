@@ -25,6 +25,8 @@ public class Datastore {
 
 	private static Path appDir;
 	private static Path myDataDir;
+	private static String license;
+	private static Boolean isRunningAsUWP;
 
 	public static Path getMyDataDirectory(boolean createIfNotExists) throws IOException {
 		Path dir = getMyDataDirectory();
@@ -126,44 +128,52 @@ public class Datastore {
 	}
 
 	public static boolean isRunningAsUWP() {
-		return Files.exists(Datastore.getApplicationDirectory().resolve("AppxManifest.xml"));
+		if(isRunningAsUWP == null) {
+			isRunningAsUWP = Files.exists(Datastore.getApplicationDirectory().resolve("AppxManifest.xml"));
+		}
+		return isRunningAsUWP;
 	}
 
 	public static String getLicense() throws IOException {
-		InputStream is = null;
-		BufferedReader reader = null;
+		if(license == null) {
+			InputStream is = null;
+			BufferedReader reader = null;
 
-		if(reader == null) {
-			Class<?> cls = Datastore.class;
-			String name = "/" + cls.getPackageName().replace('.', '/') + "/LICENSE.txt";
-			is = cls.getResourceAsStream(name);
-			if(is != null) {
-				reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-			}
-		}
-		if(reader == null) {
-			Path path = getApplicationDirectory().resolve("LICENSE.txt");
-			if(Files.isReadable(path)) {
-				reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-			}
-		}
-		if(reader != null) {
-			try {
-				StringBuilder license = new StringBuilder();
-				String line;
-				while((line = reader.readLine()) != null) {
-					license.append(line);
-					license.append("\r\n");
-				}
-				return license.toString();
-			} finally {
-				reader.close();
+			if(reader == null) {
+				Class<?> cls = Datastore.class;
+				String name = "/" + cls.getPackageName().replace('.', '/') + "/LICENSE.txt";
+				is = cls.getResourceAsStream(name);
 				if(is != null) {
-					is.close();
+					reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 				}
 			}
+			if(reader == null) {
+				Path path = getApplicationDirectory().resolve("LICENSE.txt");
+				if(Files.isReadable(path)) {
+					reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+				}
+			}
+			if(reader != null) {
+				try {
+					StringBuilder sb = new StringBuilder();
+					String line;
+					while((line = reader.readLine()) != null) {
+						sb.append(line);
+						sb.append("\r\n");
+					}
+					license = sb.toString();
+				} finally {
+					reader.close();
+					if(is != null) {
+						is.close();
+					}
+				}
+			}
+			if(license == null) {
+				license = "";
+			}
 		}
-		return null;
+		return license.isEmpty() ? null : license;
 	}
 
 	public static class SignatureEntry {

@@ -89,8 +89,6 @@ public class Main extends SingletonApplication implements Initializable {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = Fxml.load(this);
-
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/img/app-icon-48px.png")));
         primaryStage.titleProperty().bind(new StringBinding() {
             {
@@ -106,6 +104,8 @@ public class Main extends SingletonApplication implements Initializable {
                 }
             }
         });
+
+        Parent root = Fxml.load(this);
 
         Scene scene = new Scene(root);
         scene.setOnDragOver(wrap(this::scene_onDragOver));
