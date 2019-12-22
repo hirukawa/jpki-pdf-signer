@@ -10,10 +10,9 @@
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
         stylesheets="@LicenseDialog.css">
     <ScrollPane fx:id="scrollPane"
-            focusTraversable="false"
             maxWidth="600"
             maxHeight="600"
             hbarPolicy="NEVER">
-        <TextFlow fx:id="textFlow"/>
+        <TextFlow fx:id="textFlow" focusTraversable="false"/>
     </ScrollPane>
 </StackPane>

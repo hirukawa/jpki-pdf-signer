@@ -1,45 +1,28 @@
 package net.osdn.jpki.pdf_signer.control;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogEvent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Window;
-import javafx.stage.WindowEvent;
-import net.osdn.jpki.pdf_signer.Datastore;
-import net.osdn.util.javafx.event.SilentEventHandler;
 import net.osdn.util.javafx.fxml.Fxml;
 import net.osdn.util.javafx.scene.control.DialogEx;
 
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +44,11 @@ public class LicenseDialog extends DialogEx<Void> {
 
 		Node[] nodes = build(license);
 		textFlow.getChildren().addAll(nodes);
+
+		// ダイアログが表示されるまで「閉じる」ボタンを無効にしておきます。
+		// これでtextFlowに初期フォーカスが当たるようになります。
+		getDialogPane().lookupButton(ButtonType.CLOSE).disableProperty().bind(
+				getDialogPane().getContent().opacityProperty().isEqualTo(0.0, 0));
 	}
 
 	@FXML ScrollPane scrollPane;
