@@ -4,7 +4,9 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +20,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
@@ -148,6 +151,9 @@ public class Main extends SingletonApplication implements Initializable {
                 title = exception.getClass().getName();
             }
             String message = exception.getLocalizedMessage();
+            if(message != null) {
+                message = message.trim();
+            }
             toast.show(Toast.RED, title, message, null);
         };
         if(Platform.isFxApplicationThread()) {
@@ -165,6 +171,7 @@ public class Main extends SingletonApplication implements Initializable {
     @FXML Pager               pager;
     @FXML PdfView             pdfView;
     @FXML ImageView           ivCursor;
+    @FXML ProgressIndicator   piSign;
     @FXML Button              btnRemoveSignature;
     @FXML Button              btnEditSignature;
     @FXML Button              btnAddSignature;
@@ -172,6 +179,7 @@ public class Main extends SingletonApplication implements Initializable {
     ObjectBinding<Signature>  signatureBinding;
     ObjectProperty<File>      inputFileProperty = new SimpleObjectProperty<File>();
     ObjectProperty<File>      signedTemporaryFileProperty = new SimpleObjectProperty<File>();
+    BooleanProperty           busyProperty = new SimpleBooleanProperty();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -223,6 +231,8 @@ public class Main extends SingletonApplication implements Initializable {
                 Bindings.not(Bindings.selectBoolean(signatureBinding, "visible")));
         btnEditSignature.disableProperty().bind(
                 Bindings.not(Bindings.selectBoolean(signatureBinding, "visible")));
+
+        piSign.visibleProperty().bind(busyProperty);
 
         toast.maxWidthProperty().bind(getPrimaryStage().widthProperty().subtract(32));
         toast.maxHeightProperty().bind(getPrimaryStage().heightProperty().subtract(32));
@@ -334,6 +344,7 @@ public class Main extends SingletonApplication implements Initializable {
         File file = fc.showSaveDialog(getPrimaryStage());
         if(file != null) {
             Files.copy(signedTemporaryFileProperty.get().toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            toast.show(Toast.GREEN, "保存しました", file.getPath(), Toast.LONG);
         }
     }
 
@@ -423,18 +434,23 @@ public class Main extends SingletonApplication implements Initializable {
                     PDDocument document = pdfView.getDocument();
                     int pageIndex = pdfView.getPageIndex();
                     SignatureOptions options = null;
-                    File tmpFile = sign(document, null, APPLICATION_NAME, APPLICATION_VERSION);
-                    if(tmpFile != null) {
-                        signedTemporaryFileProperty.set(tmpFile);
-                        pdfView.load(tmpFile, pageIndex);
 
-                        result = Dialogs.showConfirmation(getPrimaryStage(),
-                                APPLICATION_NAME + " " + APPLICATION_VERSION,
-                                "署名が完了しました。\nファイルに名前を付けて保存しますか？");
-                        if(result == ButtonType.YES) {
-                            menuFileSave.fire();
-                        }
-                    }
+                    busyProperty.set(true);
+                    Async.execute(() -> sign(document, null, APPLICATION_NAME, APPLICATION_VERSION))
+                        .onSucceeded(tmpFile -> {
+                            if(tmpFile != null) {
+                                signedTemporaryFileProperty.set(tmpFile);
+                                pdfView.load(tmpFile, pageIndex);
+                                busyProperty.set(false);
+
+                                if(ButtonType.YES == Dialogs.showConfirmation(getPrimaryStage(),
+                                        APPLICATION_NAME + " " + APPLICATION_VERSION,
+                                        "署名が完了しました。\nファイルに名前を付けて保存しますか？")) {
+                                    menuFileSave.fire();
+                                }
+                            }
+                        })
+                        .onCompleted(state -> busyProperty.set(false));
                 }
             }
         } finally {
@@ -523,18 +539,23 @@ public class Main extends SingletonApplication implements Initializable {
         options.setPage(pageIndex);
         options.setVisualSignature(props);
 
-        File tmpFile = sign(document, options, APPLICATION_NAME, APPLICATION_VERSION);
-        if(tmpFile != null) {
-            signedTemporaryFileProperty.set(tmpFile);
-            pdfView.load(tmpFile, pageIndex);
+        lvSignature.getSelectionModel().clearSelection();
+        busyProperty.set(true);
+        Async.execute(() -> sign(document, options, APPLICATION_NAME, APPLICATION_VERSION))
+            .onSucceeded(tmpFile -> {
+                if(tmpFile != null) {
+                    signedTemporaryFileProperty.set(tmpFile);
+                    pdfView.load(tmpFile, pageIndex);
+                    busyProperty.set(false);
 
-            ButtonType result = Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
-                    "署名が完了しました。\nファイルに名前を付けて保存しますか？");
-            if(result == ButtonType.YES) {
-                menuFileSave.fire();
-            }
-            lvSignature.getSelectionModel().clearSelection();
-        }
+                    if(ButtonType.YES == Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
+                            "署名が完了しました。\nファイルに名前を付けて保存しますか？")) {
+                        menuFileSave.fire();
+                    }
+                    lvSignature.getSelectionModel().clearSelection();
+                }
+            })
+            .onCompleted(state -> busyProperty.set(false));
     }
 
     protected File getFile(DragEvent event) {

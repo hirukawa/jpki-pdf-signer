@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -13,6 +10,6 @@
             maxWidth="600"
             maxHeight="600"
             hbarPolicy="NEVER">
-        <TextFlow fx:id="textFlow" focusTraversable="false"/>
+        <TextFlow fx:id="textFlow" focusTraversable="true"/>
     </ScrollPane>
 </StackPane>

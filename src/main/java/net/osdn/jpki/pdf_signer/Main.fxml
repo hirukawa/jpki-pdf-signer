@@ -66,6 +66,7 @@
                         <ClipPane mouseTransparent="true">
                             <ImageView fx:id="ivCursor"/>
                         </ClipPane>
+                        <ProgressIndicator fx:id="piSign" />
                     </StackPane>
                 </center>
             </BorderPane>
