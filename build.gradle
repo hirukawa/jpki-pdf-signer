@@ -17,8 +17,8 @@ dependencies {
 			includes: ['**/*.jar'],
 			excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
 
-	implementation 'org.apache.pdfbox:pdfbox:2.0.17'
-	implementation 'org.apache.pdfbox:fontbox:2.0.17'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.18'
+	implementation 'org.apache.pdfbox:fontbox:2.0.18'
 
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
 
