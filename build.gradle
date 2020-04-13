@@ -1,6 +1,6 @@
 apply plugin: 'java'
 
-version = '1.2'
+version = '1.2.1'
 
 tasks.withType(JavaCompile) {
 	sourceCompatibility = 11
@@ -17,16 +17,16 @@ dependencies {
 			includes: ['**/*.jar'],
 			excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
 
-	implementation 'org.apache.pdfbox:pdfbox:2.0.18'
-	implementation 'org.apache.pdfbox:fontbox:2.0.18'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.19'
+	implementation 'org.apache.pdfbox:fontbox:2.0.19'
 
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.3'
 
-	implementation 'org.kordamp.ikonli:ikonli-javafx:11.3.4'
-	implementation 'org.kordamp.ikonli:ikonli-materialdesign-pack:11.3.4'
+	implementation 'org.kordamp.ikonli:ikonli-javafx:11.4.0'
+	implementation 'org.kordamp.ikonli:ikonli-materialdesign-pack:11.4.0'
 
 	// jpki-wrapper dependencies
-	runtimeOnly 'org.bouncycastle:bcpkix-jdk15on:1.64'
+	runtimeOnly 'org.bouncycastle:bcpkix-jdk15on:1.65'
 	runtimeOnly 'net.java.dev.jna:jna:5.5.0'
 	runtimeOnly 'net.java.dev.jna:jna-platform:5.5.0'
 }
@@ -77,11 +77,11 @@ task createJavaRuntime(type: Exec, dependsOn: ['jar', 'copyLibraries']) {
 task exewrap_x64(type: Exec, dependsOn: 'jar') {
 	setGroup("build")
 	setDescription('Assembles the executable.')
-	executable "${projectDir}/exewrap.exe"
+	executable "${projectDir}/etc/exewrap.exe"
 	args "-A", "x64",
 			"-g",
 			"-t", "11",
-			"-a", "-XX:TieredStopAtLevel=1 -XX:+UseSerialGC -XX:CICompilerCount=1 -Xverify:none -Xms128m",
+			"-a", "-XX:TieredStopAtLevel=1 -XX:+UseSerialGC -XX:CICompilerCount=1 -Xverify:none -Xms256m -Xmx1024m",
 			"-e", "SHARED",
 			"-j", "${jar.archiveFile.get()}",
 			"-i", "etc/ico/app.ico",
