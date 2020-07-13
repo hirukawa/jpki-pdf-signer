@@ -36,7 +36,6 @@ import net.osdn.jpki.wrapper.JpkiException;
 import net.osdn.jpki.wrapper.JpkiWrapper;
 import net.osdn.util.javafx.application.SingletonApplication;
 import net.osdn.util.javafx.concurrent.Async;
-import net.osdn.util.javafx.concurrent.AsyncWrappedException;
 import net.osdn.util.javafx.fxml.Fxml;
 import net.osdn.util.javafx.scene.control.Dialogs;
 import net.osdn.util.javafx.scene.control.pdf.Pager;
@@ -131,13 +130,8 @@ public class Main extends SingletonApplication implements Initializable {
     protected Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            if(e instanceof AsyncWrappedException) {
-                e = e.getCause();
-            }
             if(e instanceof Exception) {
                 showException((Exception)e);
-            } else if(Thread.getDefaultUncaughtExceptionHandler() != null) {
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(t, e);
             } else {
                 e.printStackTrace();
             }
