@@ -130,11 +130,7 @@ public class Main extends SingletonApplication implements Initializable {
     protected Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            if(e instanceof Exception) {
-                showException((Exception)e);
-            } else {
-                e.printStackTrace();
-            }
+            showException(e);
         }
     };
 
