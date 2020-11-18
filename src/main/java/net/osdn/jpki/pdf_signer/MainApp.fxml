@@ -14,8 +14,11 @@
 <?import net.osdn.jpki.pdf_signer.control.Toast?>
 
 <?import javafx.geometry.Insets?>
-<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-           stylesheets="@Main.css">
+
+<StackPane
+    xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    stylesheets="@MainApp.css">
 
     <BorderPane>
         <top>

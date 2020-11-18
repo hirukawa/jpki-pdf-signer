@@ -27,8 +27,8 @@ public class SignatureListCell extends ListCell<Signature> {
         Node node = Fxml.load(this);
         setText(null);
         setGraphic(node);
-        setOnMousePressed(SilentEventHandler.wrap(factory.main::lvSignature_cell_onMousePressed));
-        setOnMouseClicked(SilentEventHandler.wrap(factory.main::lvSignature_cell_onMouseClicked));
+        setOnMousePressed(SilentEventHandler.wrap(factory.mainApp::lvSignature_cell_onMousePressed));
+        setOnMouseClicked(SilentEventHandler.wrap(factory.mainApp::lvSignature_cell_onMouseClicked));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SignatureListCell extends ListCell<Signature> {
 
     public static class Factory implements Callback<ListView<Signature>, ListCell<Signature>> {
 
-        Main main;
+        MainApp mainApp;
         ContextMenu contextMenu1 = Fxml.load(this, "SignatureListCellContextMenu1.fxml");
         ContextMenu contextMenu2 = Fxml.load(this, "SignatureListCellContextMenu2.fxml");
 
@@ -70,11 +70,11 @@ public class SignatureListCell extends ListCell<Signature> {
         @FXML MenuItem menuEditSignature;
         @FXML MenuItem menuRemoveSignature;
 
-        public Factory(Main main) {
-            this.main = main;
-            menuAddSignature.setOnAction(SilentEventHandler.wrap(main::btnAddSignature_onAction));
-            menuEditSignature.setOnAction(SilentEventHandler.wrap(main::btnEditSignature_onAction));
-            menuRemoveSignature.setOnAction(SilentEventHandler.wrap(main::btnRemoveSignature_onAction));
+        public Factory(MainApp mainApp) {
+            this.mainApp = mainApp;
+            menuAddSignature.setOnAction(SilentEventHandler.wrap(mainApp::btnAddSignature_onAction));
+            menuEditSignature.setOnAction(SilentEventHandler.wrap(mainApp::btnEditSignature_onAction));
+            menuRemoveSignature.setOnAction(SilentEventHandler.wrap(mainApp::btnRemoveSignature_onAction));
         }
 
         @Override
