@@ -17,13 +17,13 @@ dependencies {
 			includes: ['**/*.jar'],
 			excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
 
-	implementation 'org.apache.pdfbox:pdfbox:2.0.21'
-	implementation 'org.apache.pdfbox:fontbox:2.0.21'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.22'
+	implementation 'org.apache.pdfbox:fontbox:2.0.22'
 
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.0'
 
-	implementation 'org.kordamp.ikonli:ikonli-javafx:11.5.0'
-	implementation 'org.kordamp.ikonli:ikonli-materialdesign-pack:11.5.0'
+	implementation 'org.kordamp.ikonli:ikonli-javafx:12.0.0'
+	implementation 'org.kordamp.ikonli:ikonli-materialdesign-pack:12.0.0'
 
 	// jpki-wrapper dependencies
 	runtimeOnly 'org.bouncycastle:bcpkix-jdk15on:1.66'
