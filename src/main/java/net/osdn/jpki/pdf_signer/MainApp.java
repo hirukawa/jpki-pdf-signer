@@ -495,7 +495,6 @@ public class MainApp extends SingletonApplication implements Initializable {
         PDDocument document = pdfView.getDocument();
         int pageIndex = pdfView.getPageIndex();
         int rotation = document.getPage(pageIndex).getRotation();
-        System.out.println("rotation=" + rotation);
         PDRectangle pageMediaBox = document.getPage(pageIndex).getMediaBox();
 
         PDVisibleSignDesigner designer;
