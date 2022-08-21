@@ -46,7 +46,12 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
 
+import javax.imageio.ImageIO;
 import java.awt.Desktop;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -489,18 +494,69 @@ public class MainApp extends SingletonApplication implements Initializable {
 
         PDDocument document = pdfView.getDocument();
         int pageIndex = pdfView.getPageIndex();
+        int rotation = document.getPage(pageIndex).getRotation();
+        System.out.println("rotation=" + rotation);
         PDRectangle pageMediaBox = document.getPage(pageIndex).getMediaBox();
-        double xPt = x * pageMediaBox.getWidth() / renderBounds.getWidth();
-        double yPt = y * pageMediaBox.getHeight() / renderBounds.getHeight();
 
         PDVisibleSignDesigner designer;
         try(InputStream is = new FileInputStream(signature.getFile())) {
-            designer = new PDVisibleSignDesigner(is);
-            designer.width((float)mm2px(signature.getWidthMillis()));
-            designer.height((float)mm2px(signature.getHeightMillis()));
-            designer.xAxis((float)xPt - designer.getWidth() / 2);
-            designer.yAxis((float)yPt - designer.getHeight() / 2 - pageMediaBox.getHeight());
+            if(rotation == 0) {
+                designer = new PDVisibleSignDesigner(is);
+                designer.width((float)mm2px(signature.getWidthMillis()));
+                designer.height((float)mm2px(signature.getHeightMillis()));
+                double xPt = x * pageMediaBox.getWidth() / renderBounds.getWidth();
+                double yPt = y * pageMediaBox.getHeight() / renderBounds.getHeight();
+                designer.xAxis((float)xPt - designer.getWidth() / 2);
+                designer.yAxis((float)yPt - designer.getHeight() / 2 - pageMediaBox.getHeight());
+            } else {
+                ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                BufferedImage image = ImageIO.read(is);
+                int w1 = image.getWidth();
+                int h1 = image.getHeight();
+                int w2 = (rotation % 180 == 0) ? w1 : h1;
+                int h2 = (rotation % 180 == 0) ? h1 : w1;
+                BufferedImage rotated = new BufferedImage(w2, h2, image.getType());
+                Graphics2D g2d = rotated.createGraphics();
+                g2d.translate((w2 - w1) / 2, (h2 - h1) / 2);
+                g2d.rotate(Math.toRadians(rotation * -1), w1 / 2, h1 / 2);
+                g2d.drawImage(image, null, 0, 0);
+                g2d.dispose();
+                ImageIO.write(rotated, "PNG", buf);
+
+                try(InputStream is2 = new ByteArrayInputStream(buf.toByteArray())) {
+                    designer = new PDVisibleSignDesigner(is2);
+                }
+                double xPt;
+                double yPt;
+                switch(rotation) {
+                    case 90:
+                        designer.width((float)mm2px(signature.getHeightMillis()));
+                        designer.height((float)mm2px(signature.getWidthMillis()));
+                        xPt = x * pageMediaBox.getHeight() / renderBounds.getWidth();
+                        yPt = y * pageMediaBox.getWidth() / renderBounds.getHeight();
+                        designer.xAxis((float)yPt - designer.getWidth() / 2);
+                        designer.yAxis(- (float)xPt - designer.getHeight() / 2);
+                        break;
+                    case 180:
+                        designer.width((float)mm2px(signature.getWidthMillis()));
+                        designer.height((float)mm2px(signature.getHeightMillis()));
+                        xPt = x * pageMediaBox.getWidth() / renderBounds.getWidth();
+                        yPt = y * pageMediaBox.getHeight() / renderBounds.getHeight();
+                        designer.xAxis(- (float)xPt - designer.getWidth() / 2 + pageMediaBox.getWidth());
+                        designer.yAxis(- (float)yPt - designer.getHeight() / 2);
+                        break;
+                    case 270:
+                        designer.width((float)mm2px(signature.getHeightMillis()));
+                        designer.height((float)mm2px(signature.getWidthMillis()));
+                        xPt = x * pageMediaBox.getHeight() / renderBounds.getWidth();
+                        yPt = y * pageMediaBox.getWidth() / renderBounds.getHeight();
+                        designer.xAxis(- (float)yPt - designer.getWidth() / 2 + pageMediaBox.getWidth());
+                        designer.yAxis((float)xPt - designer.getHeight() / 2 - pageMediaBox.getHeight());
+                        break;
+                }
+            }
         }
+
         PDVisibleSigProperties props = new PDVisibleSigProperties();
         props.setPdVisibleSignature(designer);
         props.visualSignEnabled(true);
