@@ -33,9 +33,11 @@ import net.osdn.jpki.pdf_signer.control.LicenseDialog;
 import net.osdn.jpki.pdf_signer.control.Toast;
 import net.osdn.jpki.wrapper.JpkiException;
 import net.osdn.jpki.wrapper.JpkiWrapper;
+import net.osdn.util.javafx.Unchecked;
 import net.osdn.util.javafx.application.SingletonApplication;
-import net.osdn.util.javafx.concurrent.Async;
+import net.osdn.util.javafx.concurrent.AsyncTask;
 import net.osdn.util.javafx.fxml.Fxml;
+import net.osdn.util.javafx.scene.SceneUtil;
 import net.osdn.util.javafx.scene.control.Dialogs;
 import net.osdn.util.javafx.scene.control.pdf.Pager;
 import net.osdn.util.javafx.scene.control.pdf.PdfView;
@@ -65,12 +67,16 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 
 public class MainApp extends SingletonApplication implements Initializable {
 
     public static final String APPLICATION_NAME = "JPKI PDF SIGNER";
     public static final String APPLICATION_VERSION;
+
+    public static ExecutorService serialExecutor = Executors.newSingleThreadExecutor();
 
     static {
         System.setProperty(
@@ -117,12 +123,18 @@ public class MainApp extends SingletonApplication implements Initializable {
         Parent root = Fxml.load(this);
 
         Scene scene = new Scene(root);
-        scene.setOnDragOver(wrap(this::scene_onDragOver));
-        scene.setOnDragDropped(wrap(this::scene_onDragDropped));
+        scene.setOnDragOver(event -> Unchecked.execute(() -> {
+            scene_onDragOver(event);
+        }));
+        scene.setOnDragDropped(event -> Unchecked.execute(() -> {
+            scene_onDragDropped(event);
+        }));
         scene.getAccelerators().putAll(pager.createDefaultAccelerators());
 
         StageUtil.setRestorable(primaryStage, Preferences.userNodeForPackage(getClass()));
-        primaryStage.setOnShown(event -> { Platform.runLater(wrap(this::stage_onReady)); });
+        primaryStage.setOnShown(event -> SceneUtil.invokeAfterLayout(root, Unchecked.runnable(() -> {
+            stage_onReady();
+        })));
         primaryStage.setMinWidth(448.0);
         primaryStage.setMinHeight(396.0);
         primaryStage.setOpacity(0.0);
@@ -153,7 +165,7 @@ public class MainApp extends SingletonApplication implements Initializable {
             if(message != null) {
                 message = message.trim();
             }
-            toast.show(Toast.RED, title, message, null);
+            toast.show(Toast.COLOR_ERROR, title, message);
         };
         if(Platform.isFxApplicationThread()) {
             r.run();
@@ -187,15 +199,33 @@ public class MainApp extends SingletonApplication implements Initializable {
         //
         // event handlers
         //
-        menuFileOpen.setOnAction(wrap(this::menuFileOpen_onAction));
-        menuFileSave.setOnAction(wrap(this::menuFileSave_onAction));
-        menuFileExit.setOnAction(wrap(this::menuFileExit_onAction));
-        menuHelpAbout.setOnAction(wrap(this::menuHelpAbout_onAction));
-        pdfView.setOnMouseMoved(wrap(this::pdfView_onMouseMoved));
-        pdfView.setOnMouseClicked(wrap(this::pdfView_onMouseClicked));
-        btnRemoveSignature.setOnAction(wrap(this::btnRemoveSignature_onAction));
-        btnEditSignature.setOnAction(wrap(this::btnEditSignature_onAction));
-        btnAddSignature.setOnAction(wrap(this::btnAddSignature_onAction));
+        menuFileOpen.setOnAction(event -> Unchecked.execute(() -> {
+            menuFileOpen_onAction(event);
+        }));
+        menuFileSave.setOnAction(event -> Unchecked.execute(() -> {
+            menuFileSave_onAction(event);
+        }));
+        menuFileExit.setOnAction(event -> Unchecked.execute(() -> {
+            menuFileExit_onAction(event);
+        }));
+        menuHelpAbout.setOnAction(event -> Unchecked.execute(() -> {
+            menuHelpAbout_onAction(event);
+        }));
+        pdfView.setOnMouseMoved(event -> Unchecked.execute(() -> {
+            pdfView_onMouseMoved(event);
+        }));
+        pdfView.setOnMouseClicked(event -> Unchecked.execute(() -> {
+            pdfView_onMouseClicked(event);
+        }));
+        btnRemoveSignature.setOnAction(event -> Unchecked.execute(() -> {
+            btnRemoveSignature_onAction(event);
+        }));
+        btnEditSignature.setOnAction(event -> Unchecked.execute(() -> {
+            btnEditSignature_onAction(event);
+        }));
+        btnAddSignature.setOnAction(event -> Unchecked.execute(() -> {
+            btnAddSignature_onAction(event);
+        }));
 
         //
         // bindings
@@ -242,18 +272,16 @@ public class MainApp extends SingletonApplication implements Initializable {
 
         lvSignature.getItems().clear();
         lvSignature.getItems().add(Signature.INVISIBLE);
-        Async.execute(() -> {
+        MainApp.serialExecutor.execute(AsyncTask.create(() -> {
             return Datastore.loadSignatures();
         }).onSucceeded(signatures -> {
             for (Signature signature : signatures) {
                 lvSignature.getItems().add(signature);
             }
-            Platform.runLater(() -> {
-                checkJpkiAvailability();
-            });
+            checkJpkiAvailability();
         }).onFailed(exception -> {
             showException(exception);
-        });
+        }));
     }
 
     void scene_onDragOver(DragEvent event) {
@@ -321,7 +349,7 @@ public class MainApp extends SingletonApplication implements Initializable {
         File file = fc.showSaveDialog(getPrimaryStage());
         if(file != null) {
             Files.copy(signedTemporaryFileProperty.get().toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            toast.show(Toast.GREEN, "保存しました", file.getPath(), Toast.LONG);
+            toast.show(Toast.COLOR_SUCCESS, "保存しました", file.getPath());
         }
     }
 
@@ -400,7 +428,7 @@ public class MainApp extends SingletonApplication implements Initializable {
             if(!event.isPrimaryButtonDown()) {
                 return;
             } else if(pdfView.getDocument() == null) {
-                toast.show(Toast.GREEN,
+                toast.show(Toast.COLOR_SUCCESS,
                         "はじめに",
                         "PDFファイルをこのウィンドウにドラッグ&ドロップして表示しましょう。");
             } else if(checkJpkiAvailability()) {
@@ -413,21 +441,23 @@ public class MainApp extends SingletonApplication implements Initializable {
                     SignatureOptions options = null;
 
                     busyProperty.set(true);
-                    Async.execute(() -> sign(document, null, APPLICATION_NAME, APPLICATION_VERSION))
-                        .onSucceeded(tmpFile -> {
-                            if(tmpFile != null) {
-                                signedTemporaryFileProperty.set(tmpFile);
-                                pdfView.load(tmpFile, pageIndex);
-                                busyProperty.set(false);
+                    MainApp.serialExecutor.execute(AsyncTask.create(() -> {
+                        return sign(document, null, APPLICATION_NAME, APPLICATION_VERSION);
+                    }).onSucceeded(tmpFile -> {
+                        if(tmpFile != null) {
+                            signedTemporaryFileProperty.set(tmpFile);
+                            pdfView.load(tmpFile, pageIndex);
+                            busyProperty.set(false);
 
-                                if(ButtonType.YES == Dialogs.showConfirmation(getPrimaryStage(),
-                                        APPLICATION_NAME + " " + APPLICATION_VERSION,
-                                        "署名が完了しました。\nファイルに名前を付けて保存しますか？")) {
-                                    menuFileSave.fire();
-                                }
+                            if(ButtonType.YES == Dialogs.showConfirmation(getPrimaryStage(),
+                                    APPLICATION_NAME + " " + APPLICATION_VERSION,
+                                    "署名が完了しました。\nファイルに名前を付けて保存しますか？")) {
+                                menuFileSave.fire();
                             }
-                        })
-                        .onCompleted(state -> busyProperty.set(false));
+                        }
+                    }).onFinished(state -> {
+                        busyProperty.set(false);
+                    }));
                 }
             }
         } finally {
@@ -568,21 +598,23 @@ public class MainApp extends SingletonApplication implements Initializable {
 
         lvSignature.getSelectionModel().clearSelection();
         busyProperty.set(true);
-        Async.execute(() -> sign(document, options, APPLICATION_NAME, APPLICATION_VERSION))
-            .onSucceeded(tmpFile -> {
-                if(tmpFile != null) {
-                    signedTemporaryFileProperty.set(tmpFile);
-                    pdfView.load(tmpFile, pageIndex);
-                    busyProperty.set(false);
+        MainApp.serialExecutor.execute(AsyncTask.create(() -> {
+            return sign(document, options, APPLICATION_NAME, APPLICATION_VERSION);
+        }).onSucceeded(tmpFile -> {
+            if(tmpFile != null) {
+                signedTemporaryFileProperty.set(tmpFile);
+                pdfView.load(tmpFile, pageIndex);
+                busyProperty.set(false);
 
-                    if(ButtonType.YES == Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
-                            "署名が完了しました。\nファイルに名前を付けて保存しますか？")) {
-                        menuFileSave.fire();
-                    }
-                    lvSignature.getSelectionModel().clearSelection();
+                if(ButtonType.YES == Dialogs.showConfirmation(getPrimaryStage(), APPLICATION_NAME + " " + APPLICATION_VERSION,
+                        "署名が完了しました。\nファイルに名前を付けて保存しますか？")) {
+                    menuFileSave.fire();
                 }
-            })
-            .onCompleted(state -> busyProperty.set(false));
+                lvSignature.getSelectionModel().clearSelection();
+            }
+        }).onFinished(state -> {
+            busyProperty.set(false);
+        }));
     }
 
     protected File getFile(DragEvent event) {
@@ -602,23 +634,15 @@ public class MainApp extends SingletonApplication implements Initializable {
     protected boolean checkJpkiAvailability() {
         boolean isAvailable = JpkiWrapper.isAvailable();
         if(!isAvailable) {
-            // JPKI 利用者クライアントソフトがインストールされていない場合、
-            // インストールを促すために、クリックで公的個人認証サービスのウェブサイトが開くようにします。
-            // ただし、Microsoft Storeアプリではストア以外でのアプリインストールを促すことが禁止されているため
-            // UWPとして実行されている場合にはウェブサイトを開く機能を提供せずメッセージ表示のみに留めています。
-            if(Datastore.isRunningAsUWP()) {
-                toast.show(Toast.GREEN, "構成", "JPKI 利用者クライアントソフトが見つかりません。");
-            } else {
-                Runnable actionOnClick = wrap(() -> {
-                    toast.hide();
-                    Desktop.getDesktop().browse(URI.create("https://www.jpki.go.jp/download/win.html"));
-                });
-                toast.show(Toast.GREEN, "事前準備", ""
-                                + "JPKI 利用者クライアントソフトをインストールしてください。\n"
-                                + "ここをクリックするとブラウザーでダウンロードサイトを開きます。",
-                        null,
-                        actionOnClick);
-            }
+            toast.show(
+                    Toast.COLOR_SUCCESS,
+                    "事前準備",
+                    "JPKI 利用者クライアントソフトをインストールしてください。\n" +
+                            "ここをクリックするとブラウザーでダウンロードサイトを開きます。",
+                    Unchecked.runnable(() -> {
+                        toast.hide();
+                        Desktop.getDesktop().browse(URI.create("https://www.jpki.go.jp/download/win.html"));
+                    }));
         }
         return isAvailable;
     }

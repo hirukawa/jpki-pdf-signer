@@ -9,7 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
-import net.osdn.util.javafx.event.SilentEventHandler;
+import net.osdn.util.javafx.Unchecked;
 import net.osdn.util.javafx.fxml.Fxml;
 
 public class SignatureListCell extends ListCell<Signature> {
@@ -27,8 +27,12 @@ public class SignatureListCell extends ListCell<Signature> {
         Node node = Fxml.load(this);
         setText(null);
         setGraphic(node);
-        setOnMousePressed(SilentEventHandler.wrap(factory.mainApp::lvSignature_cell_onMousePressed));
-        setOnMouseClicked(SilentEventHandler.wrap(factory.mainApp::lvSignature_cell_onMouseClicked));
+        setOnMousePressed(event -> Unchecked.execute(() -> {
+            this.factory.mainApp.lvSignature_cell_onMousePressed(event);
+        }));
+        setOnMouseClicked(event -> Unchecked.execute(() -> {
+            this.factory.mainApp.lvSignature_cell_onMouseClicked(event);
+        }));
     }
 
     @Override
@@ -72,9 +76,15 @@ public class SignatureListCell extends ListCell<Signature> {
 
         public Factory(MainApp mainApp) {
             this.mainApp = mainApp;
-            menuAddSignature.setOnAction(SilentEventHandler.wrap(mainApp::btnAddSignature_onAction));
-            menuEditSignature.setOnAction(SilentEventHandler.wrap(mainApp::btnEditSignature_onAction));
-            menuRemoveSignature.setOnAction(SilentEventHandler.wrap(mainApp::btnRemoveSignature_onAction));
+            menuAddSignature.setOnAction(event -> Unchecked.execute(() -> {
+                this.mainApp.btnAddSignature_onAction(event);
+            }));
+            menuEditSignature.setOnAction(event -> Unchecked.execute(() -> {
+                this.mainApp.btnEditSignature_onAction(event);
+            }));
+            menuRemoveSignature.setOnAction(event -> Unchecked.execute(() -> {
+                this.mainApp.btnRemoveSignature_onAction(event);
+            }));
         }
 
         @Override

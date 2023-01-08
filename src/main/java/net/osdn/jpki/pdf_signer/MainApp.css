@@ -1,6 +1,6 @@
 .root {
 	-fx-font-family: "Meiryo";
-	-fx-font-size: 12px;
+	-fx-font-size: 12;
 }
 
 FontIcon {
@@ -16,7 +16,7 @@ FontIcon {
     -fx-background-insets: 0;
 }
 .list-cell {
-    -fx-padding: 0px;
+    -fx-padding: 0;
 }
 .list-cell:selected {
     -fx-background-color: -fx-accent;
@@ -30,15 +30,16 @@ FontIcon {
 }
 #buttonBox > .label {
 	-fx-alignment: center;
-	-fx-min-width: 80px;
-	-fx-font-size: 14px;
+	-fx-min-width: 80;
+	-fx-font-size: 12;
 	-fx-text-fill: #F2F2F2;
 }
 #buttonBox .button {
-    -fx-padding: 0 10px 0 7px;
-	-fx-min-height: 25px;
-	-fx-pref-height: 25px;
-    -fx-min-width: 40px;
+	-fx-font-size: 12;
+    -fx-padding: 0 16 0 12;
+	-fx-min-height: 25;
+	-fx-pref-height: 25;
+    -fx-min-width: 40;
 	-fx-background-insets: 0;
 	-fx-background-radius: 0;
 	-fx-background-color: transparent;

@@ -12,7 +12,9 @@ import javafx.scene.control.Separator;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Window;
+import net.osdn.util.javafx.Unchecked;
 import net.osdn.util.javafx.fxml.Fxml;
+import net.osdn.util.javafx.scene.SceneUtil;
 import net.osdn.util.javafx.scene.control.DialogEx;
 
 import java.awt.Desktop;
@@ -39,11 +41,18 @@ public class LicenseDialog extends DialogEx<Void> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 		scrollPane.prefViewportWidthProperty().bind(textFlow.widthProperty());
 		scrollPane.prefViewportHeightProperty().bind(textFlow.heightProperty());
-		setOnShown(event -> { Platform.runLater(wrap(this::dialog_onReady)); });
+		setOnShown(event -> SceneUtil.invokeAfterLayout(getDialogPane(), Unchecked.runnable(() -> {
+			dialog_onReady();
+		})));
 		getDialogPane().getContent().setOpacity(0.0);
 
 		Node[] nodes = build(license);
 		textFlow.getChildren().addAll(nodes);
+
+		Node btn;
+		if((btn = getDialogPane().lookupButton(ButtonType.CLOSE)) != null) {
+			btn.setStyle("-fx-font-family: Meiryo; -fx-font-size: 12");
+		}
 
 		// ダイアログが表示されるまで「閉じる」ボタンを無効にしておきます。
 		// これでtextFlowに初期フォーカスが当たるようになります。

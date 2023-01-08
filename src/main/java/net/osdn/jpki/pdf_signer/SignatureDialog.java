@@ -1,22 +1,14 @@
 package net.osdn.jpki.pdf_signer;
 
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.geometry.Dimension2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogEvent;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -25,9 +17,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import net.osdn.util.javafx.event.SilentCallback;
-import net.osdn.util.javafx.event.SilentEventHandler;
+import net.osdn.util.javafx.Unchecked;
 import net.osdn.util.javafx.fxml.Fxml;
+import net.osdn.util.javafx.scene.SceneUtil;
 import net.osdn.util.javafx.scene.control.DialogEx;
 
 import java.io.ByteArrayInputStream;
@@ -40,6 +32,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
 import java.util.prefs.Preferences;
 
 public class SignatureDialog extends DialogEx<Signature> implements Initializable {
@@ -60,8 +53,12 @@ public class SignatureDialog extends DialogEx<Signature> implements Initializabl
 		Node content = Fxml.load(this);
 		getDialogPane().setContent(content);
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		setOnShowing(wrap(this::dialog_onShowing));
-		setResultConverter(wrap(this::dialog_onResult));
+		setOnShowing(event -> SceneUtil.invokeAfterLayout(getDialogPane(), Unchecked.runnable(() -> {
+			dialog_onShowing(event);
+		})));
+		setResultConverter(param -> Unchecked.execute(() -> {
+			return dialog_onResult(param);
+		}));
 
 		if(signature != null) {
 			ivImage.setImage(signature.getImage());
@@ -70,6 +67,14 @@ public class SignatureDialog extends DialogEx<Signature> implements Initializabl
 			heightMillisProperty.set(signature.getHeightMillis());
 		} else {
 			btnBrowse.requestFocus();
+		}
+
+		Node btn;
+		if((btn = getDialogPane().lookupButton(ButtonType.OK)) != null) {
+			btn.setStyle("-fx-font-family: Meiryo; -fx-font-size: 12; -fx-min-width: 96");
+		}
+		if((btn = getDialogPane().lookupButton(ButtonType.CANCEL)) != null) {
+			btn.setStyle("-fx-font-family: Meiryo; -fx-font-size: 12; -fx-min-width: 96");
 		}
 	}
 
@@ -111,10 +116,18 @@ public class SignatureDialog extends DialogEx<Signature> implements Initializabl
 			}
 		});
 
-		btnBrowse.setOnAction(wrap(this::tfBrowse_onAction));
-		tfTitle.setOnAction(wrap(this::tfTitle_onAction));
-		tfWidthMillis.setOnAction(wrap(this::tfWidthMillis_onAction));
-		tfHeightMillis.setOnAction(wrap(this::tfHeightMillis_onAction));
+		btnBrowse.setOnAction(event -> Unchecked.execute(() -> {
+			tfBrowse_onAction(event);
+		}));
+		tfTitle.setOnAction(event -> Unchecked.execute(() -> {
+			tfTitle_onAction(event);
+		}));
+		tfWidthMillis.setOnAction(event -> Unchecked.execute(() -> {
+			tfWidthMillis_onAction(event);
+		}));
+		tfHeightMillis.setOnAction(event -> Unchecked.execute(() -> {
+			tfHeightMillis_onAction(event);
+		}));
 	}
 
 	void dialog_onShowing(DialogEvent event) {
@@ -233,15 +246,5 @@ public class SignatureDialog extends DialogEx<Signature> implements Initializabl
 			}
 		}
 		return new Dimension2D(prefWidth, prefHeight);
-	}
-
-	@SuppressWarnings("overloads")
-	protected <T extends Event> EventHandler<T> wrap(SilentEventHandler<T> handler) {
-		return SilentEventHandler.wrap(handler);
-	}
-
-	@SuppressWarnings("overloads")
-	protected <P, R> Callback<P, R> wrap(SilentCallback<P, R> callback) {
-		return SilentCallback.wrap(callback);
 	}
 }

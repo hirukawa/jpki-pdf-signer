@@ -1,7 +1,7 @@
 TextFlow {
-    -fx-padding: 15px;
+    -fx-padding: 15;
 	-fx-font-family: "Meiryo";
-	-fx-font-size: 12px;
+	-fx-font-size: 12;
 	-fx-background-color: #FAFAFA;
 }
 TextFlow Text {

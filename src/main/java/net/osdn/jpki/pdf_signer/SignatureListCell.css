@@ -1,3 +1,4 @@
 .label {
-    -fx-font: 13px 'Meiryo';
+    -fx-font-family: "Meiryo";
+    -fx-font-size: 14;
 }

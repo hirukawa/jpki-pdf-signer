@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="Pane"
+    xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    stylesheets="@Toast.css"
+    visible="false"
+
+    maxWidth="${container.width}"
+    maxHeight="${container.height}">
+
+    <VBox fx:id="container"
+        styleClass="container"
+        maxWidth="780"
+        maxHeight="600">
+
+        <Label fx:id="lblTitle"
+            styleClass="title">
+        </Label>
+
+        <Label fx:id="lblMessage"
+            styleClass="message">
+        </Label>
+    </VBox>
+
+</fx:root>

@@ -11,17 +11,18 @@
 <?import javafx.geometry.Insets?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            stylesheets="@SignatureDialog.css">
+            stylesheets="@SignatureDialog.css"
+            styleClass="dialog">
     <left>
         <VBox spacing="10">
             <Button fx:id="btnBrowse"
+                    prefWidth="112"
                     text="ファイル参照...">
-                <maxWidth><Double fx:constant="MAX_VALUE"/></maxWidth>
             </Button>
             <StackPane
+                    prefWidth="112"
+                    prefHeight="112"
                     style="-fx-background-color: white;">
-                <prefWidth><SignatureListCell fx:constant="MAX_IMAGE_WIDTH"/></prefWidth>
-                <prefHeight><SignatureListCell fx:constant="MAX_IMAGE_HEIGHT"/></prefHeight>
                 <ImageView fx:id="ivImage"
                         preserveRatio="false" />
             </StackPane>
