@@ -45,7 +45,6 @@ jar {
 	manifest {
 		attributes "Specification-Version": "${project.version}"
 		attributes "Main-Class" : "net.osdn.jpki.pdf_signer.Main"
-		attributes "Splashscreen-Image": "img/splash.png"
 		attributes "Class-Path": sourceSets.main.runtimeClasspath.collect { "lib/$it.name" }.join(' ')
 	}
 	into('net/osdn/jpki/pdf_signer') {
@@ -81,14 +80,14 @@ task exewrap(type: Exec, dependsOn: 'jar') {
 	args "-A", "x64",
 			"-g",
 			"-t", "11",
-			"-a", "-Xms256m -Xmx1024m",
+			"-a", "-Xms256m -Xmx768m",
 			"-e", "SHARED",
 			"-j", "${jar.archiveFile.get()}",
 			"-i", "etc/ico/app.ico",
 			"-o", "${buildDir}/package/${archivesBaseName}.exe",
 			"-p", "JPKI PDF SIGNER",
 			"-d", "JPKI PDF SIGNER",
-			"-c", "(C) 2017-2020 HIRUKAWA Ryo",
+			"-c", "(C) 2017-2023 HIRUKAWA Ryo",
 			"-V", "${version}",
 			"-v", "${version}"
 }

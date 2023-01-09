@@ -141,37 +141,40 @@ public class MainApp extends SingletonApplication implements Initializable {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        Thread.currentThread().setUncaughtExceptionHandler(handler);
+        //
+        // 広域例外ハンドラーの設定
+        //
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> Unchecked.execute(() -> {
+            onCaughtException(thread, exception);
+        }));
     }
 
-    protected Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            showException(e);
-        }
-    };
-
-    protected void showException(Throwable exception) {
+    /** 例外を補足したときに画面に例外のスタックトレースを表示します。
+     *
+     * @param thread 例外をスローしたスレッド
+     * @param exception スローされた例外
+     */
+    protected void onCaughtException(Thread thread, Throwable exception) {
         exception.printStackTrace();
 
-        Runnable r = ()-> {
-            String title;
-            if(exception instanceof JpkiException) {
-                title = "エラー";
-            } else {
-                title = exception.getClass().getName();
+        Platform.runLater(() -> {
+            try {
+                String title;
+                if(exception instanceof JpkiException) {
+                    title = "エラー";
+                } else {
+                    title = exception.getClass().getName();
+                }
+                String message = exception.getLocalizedMessage();
+                if(message != null) {
+                    message = message.trim();
+                }
+                toast.show(Toast.COLOR_ERROR, title, message);
+            } catch(Throwable t) {
+                t.printStackTrace();
+                System.exit(0);
             }
-            String message = exception.getLocalizedMessage();
-            if(message != null) {
-                message = message.trim();
-            }
-            toast.show(Toast.COLOR_ERROR, title, message);
-        };
-        if(Platform.isFxApplicationThread()) {
-            r.run();
-        } else {
-            Platform.runLater(r);
-        }
+        });
     }
 
     @FXML Toast               toast;
@@ -279,8 +282,6 @@ public class MainApp extends SingletonApplication implements Initializable {
                 lvSignature.getItems().add(signature);
             }
             checkJpkiAvailability();
-        }).onFailed(exception -> {
-            showException(exception);
         }));
     }
 
